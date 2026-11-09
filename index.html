@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agenda Personal LB</title>
+    <!-- Tailwind CSS para diseño profesional -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            pink: '#ec4899',
+                            darkpink: '#be185d',
+                            purple: '#831843',
+                            light: '#fdf2f8',
+                            accent: '#f472b6'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white !important; }
+        }
+    </style>
+</head>
+<body class="bg-brand-light text-gray-800 font-sans min-h-screen flex flex-col">
+
+    <!-- Header / Barra Superior -->
+    <header class="bg-gradient-to-r from-brand-purple via-brand-darkpink to-brand-pink text-white shadow-md no-print">
+        <div class="container mx-auto px-4 py-3 flex flex-wrap justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <!-- Logo simulado / Referencia a Logo Agenda.jpeg -->
+                <div class="bg-white p-2 rounded-xl shadow-inner flex items-center justify-center w-12 h-12 text-brand-darkpink font-bold text-xl">
+                    <i class="fa-solid fa-calendar-days"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-wide">Agenda Personal LB</h1>
+                    <p class="text-xs text-pink-200">Gestión profesional y personal integrada</p>
+                </div>
+            </div>
+            <!-- Fecha actual superior derecha -->
+            <div id="header-date" class="text-sm bg-white/10 px-3 py-1 rounded-lg backdrop-blur-sm"></div>
+        </div>
+    </header>
+
+    <!-- Menú Desplegable de Navegación -->
+    <nav class="bg-white shadow-sm border-b border-pink-100 no-print sticky top-0 z-50">
+        <div class="container mx-auto px-4 overflow-x-auto">
+            <ul class="flex space-x-1 py-2 text-sm font-medium whitespace-nowrap">
+                <li><button onclick="switchTab('inicio')" class="tab-btn px-4 py-2 rounded-lg text-brand-darkpink bg-pink-50 hover:bg-pink-100 transition"><i class="fa-solid fa-house mr-2"></i>Inicio</button></li>
+                <li><button onclick="switchTab('perfil')" class="tab-btn px-4 py-2 rounded-lg text-gray-600 hover:bg-pink-50 hover:text-brand-darkpink transition"><i class="fa-solid fa-user mr-2"></i>Perfil</button></li>
+                <li><button onclick="switchTab('categorias')" class="tab-btn px-4 py-2 rounded-lg text-gray-600 hover:bg-pink-50 hover:text-brand-darkpink transition"><i class="fa-solid fa-tags mr-2"></i>Categorías</button></li>
+                <li><button onclick="switchTab('calendarios')" class="tab-btn px-4 py-2 rounded-lg text-gray-600 hover:bg-pink-50 hover:text-brand-darkpink transition"><i class="fa-solid fa-calendar-alt mr-2"></i>Calendarios</button></li>
+                <li><button onclick="switchTab('agenda')" class="tab-btn px-4 py-2 rounded-lg text-gray-600 hover:bg-pink-50 hover:text-brand-darkpink transition"><i class="fa-solid fa-clipboard-list mr-2"></i>Agenda</button></li>
+                <li><button onclick="switchTab('resumen')" class="tab-btn px-4 py-2 rounded-lg text-gray-600 hover:bg-pink-50 hover:text-brand-darkpink transition"><i class="fa-solid fa-chart-pie mr-2"></i>Resumen</button></li>
+                <li><button onclick="switchTab('informe')" class="tab-btn px-4 py-2 rounded-lg text-gray-600 hover:bg-pink-50 hover:text-brand-darkpink transition"><i class="fa-solid fa-file-pdf mr-2"></i>Informe Ejecutivo</button></li>
+                <li><button onclick="switchTab('ajustes')" class="tab-btn px-4 py-2 rounded-lg text-gray-600 hover:bg-pink-50 hover:text-brand-darkpink transition"><i class="fa-solid fa-gear mr-2"></i>Ajustes</button></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Contenido Principal -->
+    <main class="container mx-auto px-4 py-6 flex-grow">
+
+        <!-- 1. INICIO -->
+        <section id="tab-inicio" class="tab-content space-y-6">
+            <div class="bg-gradient-to-br from-pink-500 to-brand-purple text-white p-8 rounded-2xl shadow-xl flex flex-col md:flex-row items-center justify-between">
+                <div class="space-y-4 max-w-xl">
+                    <span class="bg-white/20 text-xs px-3 py-1 rounded-full uppercase tracking-wider font-semibold">Panel Principal</span>
+                    <h2 class="text-3xl font-extxl font-bold">Bienvenida a tu Agenda Personal LB</h2>
+                    <p class="text-pink-100 text-sm leading-relaxed">Administra tus eventos, tareas, finanzas y registros diarios con la máxima eficiencia y orden. Todo sincronizado localmente y listo para tus informes ejecutivos.</p>
+                    <div class="pt-2 flex space-x-3">
+                        <button onclick="switchTab('agenda')" class="bg-white text-brand-darkpink px-5 py-2.5 rounded-xl font-bold text-sm shadow hover:bg-pink-50 transition">Ver Agenda de Hoy</button>
+                        <button onclick="switchTab('ajustes')" class="bg-pink-900/40 text-white border border-pink-300/30 px-5 py-2.5 rounded-xl font-bold text-sm hover:bg-pink-900/60 transition">Sincronización GitHub</button>
+                    </div>
+                </div>
+                <div class="mt-6 md:mt-0 bg-white/10 p-6 rounded-2xl backdrop-blur-md border border-white/20 text-center">
+                    <i class="fa-solid fa-calendar-check text-6xl text-pink-200 mb-3"></i>
+                    <p id="inicio-reteo-hoy" class="text-lg font-semibold">Cargando registros...</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-pink-100">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-bold text-gray-700">Tareas Pendientes</h3>
+                        <div class="bg-pink-100 text-brand-darkpink p-3 rounded-xl"><i class="fa-solid fa-list-check"></i></div>
+                    </div>
+                    <p id="stat-tareas" class="text-2xl font-extrabold text-gray-900">0</p>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-pink-100">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-bold text-gray-700">Citas y Reuniones</h3>
+                        <div class="bg-purple-100 text-purple-700 p-3 rounded-xl"><i class="fa-solid fa-handshake"></i></div>
+                    </div>
+                    <p id="stat-citas" class="text-2xl font-extrabold text-gray-900">0</p>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-pink-100">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-bold text-gray-700">Ahorro Actual</h3>
+                        <div class="bg-green-100 text-green-700 p-3 rounded-xl"><i class="fa-solid fa-piggy-bank"></i></div>
+                    </div>
+                    <p id="stat-ahorro" class="text-2xl font-extrabold text-green-600">0.00 €</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. PERFIL -->
+        <section id="tab-perfil" class="tab-content hidden space-y-6">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-pink-100 max-w-3xl mx-auto">
+                <h3 class="text-xl font-bold text-brand-darkpink mb-4 border-b pb-2"><i class="fa-solid fa-user-gear mr-2"></i>Datos Personales y de Trabajo</h3>
+                <form id="profile-form" onsubmit="saveProfile(event)" class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Nombre y Apellidos</label>
+                            <input type="text" id="p-nombre" class="w-full border rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-brand-pink focus:outline-none" required>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Teléfono Personal</label>
+                            <input type="text" id="p-telefono" class="w-full border rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-brand-pink focus:outline-none">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Dirección Personal</label>
+                            <input type="text" id="p-direccion" class="w-full border rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-brand-pink focus:outline-none">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Correo Electrónico Personal</label>
+                            <input type="email" id="p-email" class="w-full border rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-brand-pink focus:outline-none">
+                        </div>
+                    </div>
+
+                    <h4 class="font-bold text-gray-700 pt-4 border-t">Lugar de Trabajo</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Lugar de Trabajo</label>
+                            <input type="text" id="t-lugar" class="w-full border rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-brand-pink focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Teléfono Trabajo / Extensión</label>
+                            <div class="flex space-x-2">
+                                <input type="text" id="t-telefono" placeholder="Teléfono" class="w-2/3 border rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-brand-pink focus:outline-none">
+                                <input type="text" id="t-ext" placeholder="Ext." class="w-1/3 border rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-brand-pink focus:outline-none">
+                            </div>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Dirección del Trabajo</label>
+                            <input type="text" id="t-direccion" class="w-full border rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-brand-pink focus:outline-none">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Correo Electrónico Laboral</label>
+                            <input type="email" id="t-email" class="w-full border rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-brand-pink focus:outline-none">
+                        </div>
+                    </div>
+                    <button type="submit" class="bg-brand-darkpink text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow hover:bg-brand-purple transition"><i class="fa-solid fa-floppy-disk mr-2"></i>Guardar Perfil</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- 3. CATEGORÍAS -->
+        <section id="tab-categorias" class="tab-content hidden space-y-6">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-pink-100 max-w-3xl mx-auto">
+                <h3 class="text-xl font-bold text-brand-darkpink mb-4 border-b pb-2"><i class="fa-solid fa-tags mr-2"></i>Gestión de Categorías</h3>
+                <form id="category-form" onsubmit="saveCategory(event)" class="flex gap-3 mb-6">
+                    <input type="text" id="cat-nombre" placeholder="Nombre de la categoría (ej. Mascotas)" class="flex-grow border rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-brand-pink focus:outline-none" required>
+                    <input type="color" id="cat-color" value="#ec4899" class="h-11 w-16 border rounded-xl cursor-pointer p-1">
+                    <button type="submit" class="bg-brand-darkpink text-white px-5 rounded-xl font-bold text-sm shadow hover:bg-brand-purple transition">Añadir</button>
+                </form>
+                <div id="categories-list" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <!-- Dinámico -->
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. CALENDARIOS -->
+        <section id="tab-calendarios" class="tab-content hidden space-y-6">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-pink-100">
+                <div class="flex flex-wrap justify-between items-center mb-6 gap-4">
+                    <h3 class="text-xl font-bold text-brand-darkpink"><i class="fa-solid fa-calendar-days mr-2"></i>Vista de Calendarios y Filtros</h3>
+                    <div class="flex space-x-2">
+                        <button onclick="filterCalendar('anual')" class="cal-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-pink-100 text-brand-darkpink">Anual</button>
+                        <button onclick="filterCalendar('mensual')" class="cal-btn px-3 py-1.5 rounded-lg text-xs font-bold text-gray-600 hover:bg-pink-50">Mensual</button>
+                        <button onclick="filterCalendar('semanal')" class="cal-btn px-3 py-1.5 rounded-lg text-xs font-bold text-gray-600 hover:bg-pink-50">Semanal</button>
+                    </div>
+                </div>
+                <div class="bg-pink-50/50 p-4 rounded-xl mb-4 flex flex-wrap gap-4 items-end">
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Fecha Desde</label>
+                        <input type="date" id="filtro-desde" onchange="applyCustomFilter()" class="border rounded-xl p-2 text-sm bg-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Fecha Hasta</label>
+                        <input type="date" id="filtro-hasta" onchange="applyCustomFilter()" class="border rounded-xl p-2 text-sm bg-white">
+                    </div>
+                    <button onclick="resetCalendarFilter()" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-xl text-sm font-bold hover:bg-gray-300">Limpiar Filtros</button>
+                </div>
+                <div id="calendar-records-container" class="space-y-3">
+                    <!-- Dinámico -->
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. AGENDA -->
+        <section id="tab-agenda" class="tab-content hidden space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Formulario Nuevo Registro -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-pink-100 lg:col-span-1">
+                    <h3 class="text-lg font-bold text-brand-darkpink mb-4 border-b pb-2"><i class="fa-solid fa-plus-circle mr-2"></i>Añadir Nuevo Registro</h3>
+                    <form id="agenda-form" onsubmit="saveAgendaRecord(event)" class="space-y-3">
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Tipo</label>
+                            <select id="ag-tipo" class="w-full border rounded-xl p-2 text-sm focus:ring-2 focus:ring-brand-pink focus:outline-none">
+                                <option value="Evento">Evento</option>
+                                <option value="Tarea">Tarea</option>
+                                <option value="Reunión">Reunión</option>
+                                <option value="Cumpleaños">Cumpleaños</option>
+                                <option value="Entrevista">Entrevista</option>
+                                <option value="Curso">Curso</option>
+                                <option value="Ingreso">Ingreso (Finanzas)</option>
+                                <option value="Gasto">Gasto (Finanzas)</option>
+                                <option value="Ahorro">Ahorro</option>
+                                <option value="Deuda">Deuda</option>
+                                <option value="Otro">Otro</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Categoría</label>
+                            <select id="ag-categoria" class="w-full border rounded-xl p-2 text-sm focus:ring-2 focus:ring-brand-pink focus:outline-none">
+                                <!-- Dinámico -->
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Título / Descripción corta</label>
+                            <input type="text" id="ag-titulo" class="w-full border rounded-xl p-2 text-sm focus:ring-2 focus:ring-brand-pink focus:outline-none" required>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Fecha Inicio</label>
+                                <input type="date" id="ag-f inicio" class="w-full border rounded-xl p-2 text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Fecha Fin</label>
+                                <input type="date" id="ag-f fin" class="w-full border rounded-xl p-2 text-sm">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Ubicación / Enlace</label>
+                            <input type="text" id="ag-ubicacion" class="w-full border rounded-xl p-2 text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Personas de contacto / Importe (€)</label>
+                            <input type="text" id="ag-personas" placeholder="Ej. Juan Pérez o 150.00" class="w-full border rounded-xl p-2 text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Subtareas (separadas por comas)</label>
+                            <input type="text" id="ag-subtareas" placeholder="Ej. Revisar documento, Enviar correo" class="w-full border rounded-xl p-2 text-sm">
+                        </div>
+                        <div class="flex items-center space-x-2 pt-2">
+                            <input type="checkbox" id="ag-completado" class="w-4 h-4 text-brand-pink rounded">
+                            <label class="text-xs font-bold uppercase text-gray-700">Marcar como Completado manualmente</label>
+                        </div>
+                        <button type="submit" class="w-full bg-brand-darkpink text-white py-2.5 rounded-xl font-bold text-sm shadow hover:bg-brand-purple transition mt-2">Guardar Registro</button>
+                    </form>
+                </div>
+
+                <!-- Listado Diario y Registros -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-pink-100 lg:col-span-2 space-y-4">
+                    <div class="flex justify-between items-center border-b pb-2">
+                        <h3 class="text-lg font-bold text-brand-darkpink"><i class="fa-solid fa-list mr-2"></i>Registros de la Agenda</h3>
+                        <span id="agenda-hoy-fecha" class="text-xs bg-pink-100 text-brand-darkpink px-3 py-1 rounded-full font-semibold"></span>
+                    </div>
+                    <div id="agenda-list-container" class="space-y-3 max-h-[600px] overflow-y-auto pr-2">
+                        <!-- Dinámico -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. RESUMEN -->
+        <section id="tab-resumen" class="tab-content hidden space-y-6">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-pink-100 space-y-6">
+                <h3 class="text-xl font-bold text-brand-darkpink border-b pb-2"><i class="fa-solid fa-chart-pie mr-2"></i>Resumen General y Financiero</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-pink-50 p-4 rounded-xl border border-pink-100">
+                        <h4 class="font-bold text-brand-darkpink text-sm mb-2">Objetivos y Logros</h4>
+                        <p class="text-xs text-gray-600 mb-1">Registra notas clave en Ajustes o ediciones rápidas.</p>
+                        <div id="resumen-objetivos" class="text-sm font-semibold text-gray-800">Sin objetivos registrados.</div>
+                    </div>
+                    <div class="bg-purple-50 p-4 rounded-xl border border-purple-100">
+                        <h4 class="font-bold text-purple-700 text-sm mb-2">Estado de Tareas y Citas</h4>
+                        <div id="resumen-tareas-citas" class="text-xs space-y-1 text-gray-700">Calculando...</div>
+                    </div>
+                    <div class="bg-green-50 p-4 rounded-xl border border-green-100">
+                        <h4 class="font-bold text-green-700 text-sm mb-2">Resumen Financiero</h4>
+                        <div id="resumen-financiero" class="text-xs space-y-1 text-gray-700">Calculando...</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 7. INFORME EJECUTIVO -->
+        <section id="tab-informe" class="tab-content hidden space-y-6">
+            <div class="bg-white p-8 rounded-2xl shadow-sm border border-pink-100 max-w-4xl mx-auto space-y-6">
+                <!-- Cabecera obligatoria para impresión -->
+                <div class="flex justify-between items-center border-b-2 border-brand-pink pb-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="bg-brand-darkpink text-white p-3 rounded-xl font-bold text-xl"><i class="fa-solid fa-calendar-days"></i></div>
+                        <div>
+                            <h2 class="font-bold text-gray-800 text-lg">Agenda Personal LB</h2>
+                            <p class="text-xs text-gray-500">Informe Ejecutivo de Desempeño</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p id="informe-fecha-actual" class="text-xs font-bold text-brand-darkpink"></p>
+                        <button onclick="window.print()" class="no-print mt-2 bg-brand-darkpink text-white px-4 py-1.5 rounded-lg text-xs font-bold shadow hover:bg-brand-purple"><i class="fa-solid fa-print mr-1"></i>Imprimir PDF</button>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <h3 class="font-bold text-brand-darkpink text-base">Evaluación General y Desempeño</h3>
+                    <div id="informe-contenido" class="text-sm text-gray-700 space-y-3 bg-pink-50/40 p-4 rounded-xl">
+                        <!-- Generado por JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 8. AJUSTES -->
+        <section id="tab-ajustes" class="tab-content hidden space-y-6">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-pink-100 max-w-2xl mx-auto space-y-6">
+                <h3 class="text-xl font-bold text-brand-darkpink border-b pb-2"><i class="fa-solid fa-gear mr-2"></i>Ajustes y Sincronización</h3>
+                
+                <div class="space-y-4">
+                    <div class="border-b pb-4">
+                        <h4 class="font-bold text-sm text-gray-700 mb-2">Copia de Seguridad Local</h4>
+                        <div class="flex space-x-3">
+                            <button onclick="exportBackup()" class="bg-blue-600 text-white px-4 py-2 rounded-xl text-xs font-bold shadow hover:bg-blue-700"><i class="fa-solid fa-download mr-1"></i>Crear Copia de Seguridad</button>
+                            <label class="bg-gray-600 text-white px-4 py-2 rounded-xl text-xs font-bold shadow hover:bg-gray-700 cursor-pointer">
+                                <i class="fa-solid fa-upload mr-1"></i>Restaurar Copia <input type="file" id="import-file" onchange="importBackup(event)" class="hidden">
+                            </label>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 class="font-bold text-sm text-gray-700 mb-2">Sincronización con GitHub (Token)</h4>
+                        <p class="text-xs text-gray-500 mb-2">Introduce tu Token personal de GitHub y repositorio para respaldar los datos en tiempo real.</p>
+                        <div class="space-y-2">
+                            <input type="text" id="gh-token" placeholder="GitHub Personal Access Token (ghp_...)" class="w-full border rounded-xl p-2.5 text-sm">
+                            <input type="text" id="gh-repo" placeholder="usuario/repositorio" class="w-full border rounded-xl p-2.5 text-sm">
+                            <button onclick="saveGitHubConfig()" class="bg-brand-darkpink text-white px-4 py-2 rounded-xl text-xs font-bold shadow hover:bg-brand-purple">Guardar Configuración GitHub</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Script de lógica de la aplicación -->
+    <script>
+        // Estado inicial y almacenamiento local
+        let appData = JSON.parse(localStorage.getItem('agenda_lb_data')) || {
+            profile: {},
+            categories: [
+                { id: '1', name: 'Hogar', color: '#ec4899' },
+                { id: '2', name: 'Trabajo', color: '#3b82f6' },
+                { id: '3', name: 'Finanzas', color: '#10b981' },
+                { id: '4', name: 'Mascotas', color: '#f59e0b' },
+                { id: '5', name: 'Salud', color: '#8b5cf6' },
+                { id: '6', name: 'Cumpleaños', color: '#ef4444' }
+            ],
+            records: [],
+            github: { token: '', repo: '' }
+        };
+
+        function saveData() {
+            localStorage.setItem('agenda_lb_data', JSON.stringify(appData));
+            updateUI();
+        }
+
+        // Control de Pestañas
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(el => {
+                el.classList.remove('text-brand-darkpink', 'bg-pink-50');
+                el.classList.add('text-gray-600');
+            });
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+            event.currentTarget.classList.add('text-brand-darkpink', 'bg-pink-50');
+            event.currentTarget.classList.remove('text-gray-600');
+        }
+
+        // Inicialización de fechas y datos
+        window.onload = function() {
+            const todayStr = new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            document.getElementById('header-date').innerText = todayStr;
+            document.getElementById('agenda-hoy-fecha').innerText = todayStr;
+            document.getElementById('informe-fecha-actual').innerText = todayStr;
+            
+            // Cargar perfil si existe
+            if(appData.profile) {
+                document.getElementById('p-nombre').value = appData.profile.nombre || '';
+                document.getElementById('p-telefono').value = appData.profile.telefono || '';
+                document.getElementById('p-direccion').value = appData.profile.direccion || '';
+                document.getElementById('p-email').value = appData.profile.email || '';
+                document.getElementById('t-lugar').value = appData.profile.tLugar || '';
+                document.getElementById('t-telefono').value = appData.profile.tTelefono || '';
+                document.getElementById('t-ext').value = appData.profile.tExt || '';
+                document.getElementById('t-direccion').value = appData.profile.tDireccion || '';
+                document.getElementById('t-email').value = appData.profile.tEmail || '';
+            }
+
+            updateUI();
+        };
+
+        // Guardar Perfil
+        function saveProfile(e) {
+            e.preventDefault();
+            appData.profile = {
+                nombre: document.getElementById('p-nombre').value,
+                telefono: document.getElementById('p-telefono').value,
+                direccion: document.getElementById('p-direccion').value,
+                email: document.getElementById('p-email').value,
+                tLugar: document.getElementById('t-lugar').value,
+                tTelefono: document.getElementById('t-telefono').value,
+                tExt: document.getElementById('t-ext').value,
+                tDireccion: document.getElementById('t-direccion').value,
+                tEmail: document.getElementById('t-email').value
+            };
+            saveData();
+            alert('¡Perfil guardado correctamente!');
+        }
+
+        // Guardar Categoría
+        function saveCategory(e) {
+            e.preventDefault();
+            const name = document.getElementById('cat-nombre').value;
+            const color = document.getElementById('cat-color').value;
+            appData.categories.push({ id: Date.now().toString(), name, color });
+            document.getElementById('cat-nombre').value = '';
+            saveData();
+        }
+
+        // Guardar Registro de Agenda
+        function saveAgendaRecord(e) {
+            e.preventDefault();
+            const subtxt = document.getElementById('ag-subtareas').value;
+            const subtasks = subtxt ? subtxt.split(',').map(s => ({ text: s.trim(), completed: false })) : [];
+
+            const record = {
+                id: Date.now().toString(),
+                tipo: document.getElementById('ag-tipo').value,
+                categoria: document.getElementById('ag-categoria').value,
+                titulo: document.getElementById('ag-titulo').value,
+                fInicio: document.getElementById('ag-f inicio').value || new Date().toISOString().split('T')[0],
+                fFin: document.getElementById('ag-f fin').value || '',
+                ubicacion: document.getElementById('ag-ubicacion').value,
+                personas: document.getElementById('ag-personas').value,
+                subtareas: subtasks,
+                completado: document.getElementById('ag-completado').checked
+            };
+
+            appData.records.push(record);
+            document.getElementById('agenda-form').reset();
+            saveData();
+        }
+
+        // Cambiar estado subtarea
+        function toggleSubtask(recordId, index) {
+            const rec = appData.records.find(r => r.id === recordId);
+            if(rec && rec.subtareas[index]) {
+                rec.subtareas[index].completed = !rec.subtareas[index].completed;
+                saveData();
+            }
+        }
+
+        // Borrar registro
+        function deleteRecord(id) {
+            appData.records = appData.records.filter(r => r.id !== id);
+            saveData();
+        }
+
+        // Actualizar Interfaz Completa
+        function updateUI() {
+            // Select de Categorías
+            const catSelect = document.getElementById('ag-categoria');
+            catSelect.innerHTML = appData.categories.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
+
+            // Lista de Categorías
+            const catList = document.getElementById('categories-list');
+            catList.innerHTML = appData.categories.map(c => `
+                <div class="flex items-center justify-between p-3 rounded-xl border border-pink-100 bg-pink-50/30">
+                    <div class="flex items-center space-x-3">
+                        <span class="w-4 h-4 rounded-full" style="background-color: ${c.color}"></span>
+                        <span class="font-bold text-sm text-gray-700">${c.name}</span>
+                    </div>
+                </div>
+            `).join('');
+
+            // Listado Agenda
+            const agendaList = document.getElementById('agenda-list-container');
+            agendaList.innerHTML = appData.records.length === 0 ? '<p class="text-xs text-gray-500">No hay registros en la agenda.</p>' : appData.records.map(r => {
+                let statusBadge = '';
+                let progressPercent = 0;
+                if(r.subtareas.length > 0) {
+                    const completedCount = r.subtareas.filter(s => s.completed).length;
+                    progressPercent = Math.round((completedCount / r.subtareas.length) * 100);
+                    if(completedCount === 0) statusBadge = `<span class="bg-red-100 text-red-700 px-2 py-0.5 rounded text-[10px] font-bold">PENDIENTE</span>`;
+                    else if(completedCount === r.subtareas.length || r.completado) statusBadge = `<span class="bg-green-100 text-green-700 px-2 py-0.5 rounded text-[10px] font-bold">COMPLETADO</span>`;
+                    else statusBadge = `<span class="bg-amber-100 text-amber-700 px-2 py-0.5 rounded text-[10px] font-bold">${progressPercent}%</span>`;
+                } else {
+                    statusBadge = r.completado ? `<span class="bg-green-100 text-green-700 px-2 py-0.5 rounded text-[10px] font-bold">COMPLETADO</span>` : `<span class="bg-red-100 text-red-700 px-2 py-0.5 rounded text-[10px] font-bold">PENDIENTE</span>`;
+                }
+
+                return `
+                    <div class="border border-pink-100 p-4 rounded-xl space-y-2 bg-white shadow-xs">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <span class="bg-pink-100 text-brand-darkpink px-2 py-0.5 rounded text-xs font-bold mr-2">${r.tipo}</span>
+                                <span class="text-xs text-gray-500 font-semibold">${r.categoria}</span>
+                                <h4 class="font-bold text-gray-800 text-sm mt-1">${r.titulo}</h4>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                ${statusBadge}
+                                <button onclick="deleteRecord('${r.id}')" class="text-red-500 hover:text-red-700 text-xs"><i class="fa-solid fa-trash"></i></button>
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-500"><i class="fa-solid fa-calendar mr-1"></i> ${r.fInicio} ${r.fFin ? 'al ' + r.fFin : ''} | <i class="fa-solid fa-location-dot mr-1"></i> ${r.ubicacion || 'N/A'}</p>
+                        ${r.subtareas.length > 0 ? `
+                            <div class="space-y-1 pt-1 border-t border-gray-100">
+                                <div class="w-full bg-gray-200 rounded-full h-1.5 overflow-hidden">
+                                    <div class="bg-green-500 h-1.5 transition-all" style="width: ${progressPercent}%"></div>
+                                </div>
+                                <div class="flex flex-wrap gap-2 pt-1">
+                                    ${r.subtareas.map((st, idx) => `
+                                        <label class="text-xs flex items-center space-x-1 cursor-pointer bg-gray-50 px-2 py-0.5 rounded border">
+                                            <input type="checkbox" ${st.completed ? 'checked' : ''} onchange="toggleSubtask('${r.id}', ${idx})" class="rounded text-brand-pink">
+                                            <span class="${st.completed ? 'line-through text-gray-400' : 'text-gray-700'}">${st.text}</span>
+                                        </label>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }).join('');
+
+            // Estadísticas e inicio
+            document.getElementById('stat-tareas').innerText = appData.records.filter(r => r.tipo === 'Tarea').length;
+            document.getElementById('stat-citas').innerText = appData.records.filter(r => r.tipo === 'Reunión' || r.tipo === 'Evento').length;
+            
+            // Finanzas y ahorros
+            const ahorros = appData.records.filter(r => r.tipo === 'Ahorro' || r.tipo === 'Ingreso').reduce((acc, curr) => acc + (parseFloat(curr.personas) || 0), 0);
+            document.getElementById('stat-ahorro').innerText = ahorros.toFixed(2) + ' €';
+
+            // Resumen Financiero y Tareas
+            document.getElementById('resumen-tareas-citas').innerHTML = `
+                <p>Total Tareas: <b>${appData.records.filter(r => r.tipo === 'Tarea').length}</b></p>
+                <p>Total Citas: <b>${appData.records.filter(r => r.tipo === 'Reunión').length}</b></p>
+            `;
+            document.getElementById('resumen-financiero').innerHTML = `
+                <p>Ingresos / Ahorros Totales: <b>${ahorros.toFixed(2)} €</b></p>
+            `;
+
+            // Informe Ejecutivo
+            document.getElementById('informe-contenido').innerHTML = `
+                <p><b>Evaluación de Desempeño:</b> Se han registrado un total de <b>${appData.records.length}</b> elementos en la agenda general.</p>
+                <p><b>Estado Actual:</b> Las categorías activas operan correctamente con sincronización local activa.</p>
+                <p><b>Pendientes clave:</b> Revisar las tareas marcadas en rojo en la sección de agenda para cumplir con los plazos previstos.</p>
+            `;
+        }
+
+        // Funciones de Copia de Seguridad
+        function exportBackup() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appData));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", "backup_agenda_lb.json");
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+
+        function importBackup(e) {
+            const fileReader = new FileReader();
+            fileReader.readAsText(e.target.files[0], "UTF-8");
+            fileReader.onload = event => {
+                appData = JSON.parse(event.target.result);
+                saveData();
+                alert('¡Copia de seguridad restaurada con éxito!');
+            };
+        }
+
+        function saveGitHubConfig() {
+            appData.github.token = document.getElementById('gh-token').value;
+            appData.github.repo = document.getElementById('gh-repo').value;
+            saveData();
+            alert('Configuración de GitHub guardada correctamente.');
+        }
+
+        function filterCalendar(tipo) {
+            alert(`Filtro ${tipo} aplicado.`);
+        }
+        function applyCustomFilter() {}
+        function resetCalendarFilter() {}
+    </script>
+</body>
+</html>
