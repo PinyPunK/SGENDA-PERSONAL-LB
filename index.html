@@ -1,617 +1,1860 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agenda Personal LB</title>
-    <!-- Tailwind CSS para diseño profesional -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        brand: {
-                            pink: '#ec4899',
-                            darkpink: '#be185d',
-                            purple: '#831843',
-                            light: '#fdf2f8',
-                            accent: '#f472b6'
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-    <!-- FontAwesome para iconos -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        @media print {
-            .no-print { display: none !important; }
-            body { background: white !important; }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agenda Personal LB</title>
+  
+  <!-- Icono para navegadores y dispositivos móviles (Apple / Android) -->
+  <link rel="icon" type="image/jpeg" href="Logo Agenda.jpeg">
+  <link rel="apple-touch-icon" href="Logo Agenda.jpeg">
+  <meta name="theme-color" content="#9e1f63">
+
+  <style>
+    /* ==========================================================================
+       1. VARIABLES CSS (Colores del Logo LB y Modo Claro / Oscuro)
+       Puedes ajustar estos códigos hexadecimales si deseas cambiar algún tono.
+       ========================================================================== */
+    :root {
+      --brand-primary: #9e1f63;    /* Magenta oscuro del texto "LB AGENDA PERSONAL" */
+      --brand-secondary: #ff4da6;  /* Rosa vibrante del lomo de la agenda en el logo */
+      --brand-coral: #e06d79;      /* Tono coral/salmón del calendario del logo */
+      --brand-peach: #fad4a6;      /* Tono melocotón claro de la cabecera del logo */
+      --brand-dark: #3d1e36;       /* Tono ciruela oscuro de los bordes del logo */
+      
+      --bg-main: #fdf8fa;          /* Fondo principal suave */
+      --bg-card: #ffffff;          /* Fondo de tarjetas y formularios */
+      --text-main: #2d1627;        /* Color de texto principal */
+      --text-muted: #6e5568;       /* Color de texto secundario */
+      --border-color: #e6d5e0;     /* Color de bordes */
+      
+      --status-green: #28a745;     /* Verde para COMPLETADO y barra de progreso */
+      --status-red: #dc3545;       /* Rojo para PENDIENTE y barra de progreso */
+      --shadow: 0 4px 12px rgba(158, 31, 99, 0.08);
+    }
+
+    /* Variables que se activan automáticamente cuando el usuario elige Modo Oscuro */
+    body.dark-mode {
+      --bg-main: #1a0f17;
+      --bg-card: #291824;
+      --text-main: #f7edf4;
+      --text-muted: #c4a9bc;
+      --border-color: #4a2d42;
+      --shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    /* ==========================================================================
+       2. CABECERA PRINCIPAL Y MENÚ DESPLEGABLE
+       ========================================================================== */
+    header.app-header {
+      background: linear-gradient(135deg, var(--brand-dark), var(--brand-primary), var(--brand-secondary));
+      color: #ffffff;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .brand-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+    }
+
+    .brand-logo {
+      width: 48px;
+      height: 48px;
+      border-radius: 10px;
+      object-fit: contain;
+      background-color: #ffffff;
+      padding: 2px;
+      border: 2px solid var(--brand-peach);
+    }
+
+    .brand-title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+    }
+
+    /* Menú Desplegable */
+    .nav-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .menu-dropdown {
+      position: relative;
+    }
+
+    .menu-btn {
+      background-color: rgba(255, 255, 255, 0.18);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      padding: 9px 16px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.2s;
+    }
+
+    .menu-btn:hover {
+      background-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 110%;
+      background-color: var(--bg-card);
+      min-width: 230px;
+      border-radius: 10px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+      border: 1px solid var(--border-color);
+      overflow: hidden;
+      z-index: 200;
+    }
+
+    .dropdown-content.show {
+      display: block;
+    }
+
+    .dropdown-content button {
+      width: 100%;
+      text-align: left;
+      padding: 12px 16px;
+      background: none;
+      border: none;
+      border-bottom: 1px solid var(--border-color);
+      color: var(--text-main);
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: background 0.2s;
+    }
+
+    .dropdown-content button:last-child {
+      border-bottom: none;
+    }
+
+    .dropdown-content button:hover {
+      background-color: var(--brand-peach);
+      color: #2d1627;
+    }
+
+    /* ==========================================================================
+       3. PANTALLA DE INICIO (Cuadrícula idéntica a la imagen de referencia)
+       ========================================================================== */
+    main {
+      flex: 1;
+      max-width: 1150px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 24px 16px;
+    }
+
+    .section-view {
+      display: none;
+      animation: fadeIn 0.25s ease-in-out;
+    }
+
+    .section-view.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .home-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      margin-top: 10px;
+    }
+
+    @media (max-width: 768px) {
+      .home-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .home-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .home-tile {
+      height: 115px;
+      border: 1.5px solid #000000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.35rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      user-select: none;
+      text-align: center;
+      padding: 10px;
+    }
+
+    .home-tile:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 14px rgba(0,0,0,0.18);
+    }
+
+    /* Colores exactos de la imagen adjunta para la pantalla INICIO */
+    .tile-hogar { background-color: #54a835; color: #000; }
+    .tile-trabajo { background-color: #ffaaa5; color: #000; }
+    .tile-finanzas { background-color: #ffe2d1; color: #000; }
+    .tile-mascotas { background-color: #ecf385; color: #000; }
+    .tile-salud { background-color: #08789b; color: #000; }
+    .tile-cumpleanos { background-color: #b4d4ee; color: #000; }
+    .tile-agenda { background-color: #cceeff; color: #000; }
+    .tile-anual { background-color: #ccf2d6; color: #000; }
+    .tile-mensual { background-color: #791e64; color: #fff; }
+    .tile-semanal { background-color: #d66ac2; color: #000; }
+    .tile-resumen { background-color: #e66c2c; color: #000; }
+    .tile-informes { background-color: #f4ccf0; color: #000; }
+
+    /* ==========================================================================
+       4. COMPONENTES COMUNES: TARJETAS, FORMULARIOS, BOTONES Y BARRA PROGRESO
+       ========================================================================== */
+    .card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 18px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--brand-primary);
+    }
+
+    .section-title {
+      font-size: 1.4rem;
+      color: var(--brand-primary);
+      font-weight: 800;
+    }
+
+    body.dark-mode .section-title {
+      color: var(--brand-peach);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .form-group label {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      padding: 10px 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      font-size: 0.95rem;
+    }
+
+    .btn {
+      padding: 9px 16px;
+      border-radius: 8px;
+      border: none;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: opacity 0.2s, transform 0.1s;
+    }
+
+    .btn:hover { opacity: 0.92; }
+    .btn:active { transform: scale(0.98); }
+
+    .btn-primary {
+      background-color: var(--brand-primary);
+      color: #ffffff;
+    }
+
+    .btn-secondary {
+      background-color: var(--brand-secondary);
+      color: #ffffff;
+    }
+
+    .btn-outline {
+      background-color: transparent;
+      border: 1.5px solid var(--brand-primary);
+      color: var(--brand-primary);
+    }
+
+    body.dark-mode .btn-outline {
+      border-color: var(--brand-peach);
+      color: var(--brand-peach);
+    }
+
+    .btn-danger {
+      background-color: var(--status-red);
+      color: #ffffff;
+    }
+
+    .btn-sm {
+      padding: 5px 10px;
+      font-size: 0.8rem;
+    }
+
+    /* Estados y Barra de Progreso Bicolor (Verde Completado / Rojo Pendiente) */
+    .badge-pendiente {
+      background-color: var(--status-red);
+      color: #ffffff;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-weight: 800;
+      font-size: 0.8rem;
+      display: inline-block;
+    }
+
+    .badge-completado {
+      background-color: var(--status-green);
+      color: #ffffff;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-weight: 800;
+      font-size: 0.8rem;
+      display: inline-block;
+    }
+
+    .dual-progress-container {
+      width: 100%;
+      margin: 8px 0;
+    }
+
+    .dual-progress-bar {
+      display: flex;
+      height: 22px;
+      border-radius: 6px;
+      overflow: hidden;
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: #ffffff;
+      border: 1px solid rgba(0,0,0,0.15);
+    }
+
+    .progress-green {
+      background-color: var(--status-green);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: width 0.3s ease;
+    }
+
+    .progress-red {
+      background-color: var(--status-red);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: width 0.3s ease;
+    }
+
+    /* Tarjetas de registros de la Agenda */
+    .record-item {
+      border: 1px solid var(--border-color);
+      border-left: 7px solid var(--brand-primary);
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 12px;
+      background-color: var(--bg-card);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .record-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .subtask-list {
+      list-style: none;
+      margin-top: 6px;
+      padding-left: 4px;
+    }
+
+    .subtask-list li {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+      font-size: 0.9rem;
+    }
+
+    /* ==========================================================================
+       5. CALENDARIOS Y GRÁFICOS CORPORATIVOS
+       ========================================================================== */
+    .calendar-month-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+      margin-top: 12px;
+    }
+
+    .cal-day-header {
+      text-align: center;
+      font-weight: 800;
+      padding: 8px 4px;
+      background-color: var(--brand-primary);
+      color: #ffffff;
+      border-radius: 6px;
+      font-size: 0.85rem;
+    }
+
+    .cal-day-cell {
+      min-height: 85px;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 6px;
+      background-color: var(--bg-main);
+      font-size: 0.82rem;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .cal-day-num {
+      font-weight: 800;
+      margin-bottom: 2px;
+    }
+
+    .cal-pill {
+      padding: 2px 5px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #000;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .annual-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 14px;
+    }
+
+    .mini-month {
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 10px;
+      background-color: var(--bg-main);
+    }
+
+    .mini-month h4 {
+      text-align: center;
+      color: var(--brand-primary);
+      margin-bottom: 6px;
+      text-transform: capitalize;
+    }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .kpi-box {
+      padding: 16px;
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+      background: linear-gradient(135deg, rgba(158,31,99,0.06), rgba(255,77,166,0.06));
+    }
+
+    .kpi-box h4 {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .kpi-value {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--brand-primary);
+    }
+
+    body.dark-mode .kpi-value {
+      color: var(--brand-peach);
+    }
+
+    /* ==========================================================================
+       6. CABECERA DE IMPRESIÓN PDF (@media print)
+       Garantiza el formato: Logo izquierda | Nombre app centro | Fecha derecha
+       ========================================================================== */
+    .print-only-header {
+      display: none;
+    }
+
+    @media print {
+      header.app-header,
+      .no-print,
+      .btn {
+        display: none !important;
+      }
+
+      body {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+      }
+
+      .print-only-header {
+        display: flex !important;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 3px solid #9e1f63;
+        padding-bottom: 12px;
+        margin-bottom: 20px;
+      }
+
+      .print-only-header img {
+        width: 65px;
+        height: 65px;
+        object-fit: contain;
+      }
+
+      .print-only-header h1 {
+        font-size: 1.6rem;
+        color: #9e1f63;
+        text-align: center;
+        flex: 1;
+      }
+
+      .print-only-header .print-date {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #3d1e36;
+      }
+
+      .card, .record-item {
+        box-shadow: none !important;
+        border: 1px solid #ccc !important;
+        page-break-inside: avoid;
+      }
+    }
+  </style>
 </head>
-<body class="bg-brand-light text-gray-800 font-sans min-h-screen flex flex-col">
+<body>
 
-    <!-- Header / Barra Superior -->
-    <header class="bg-gradient-to-r from-brand-purple via-brand-darkpink to-brand-pink text-white shadow-md no-print">
-        <div class="container mx-auto px-4 py-3 flex flex-wrap justify-between items-center">
-            <div class="flex items-center space-x-3">
-                <!-- Logo simulado / Referencia a Logo Agenda.jpeg -->
-                <div class="bg-white p-2 rounded-xl shadow-inner flex items-center justify-center w-12 h-12 text-brand-darkpink font-bold text-xl">
-                    <i class="fa-solid fa-calendar-days"></i>
-                </div>
-                <div>
-                    <h1 class="text-xl font-bold tracking-wide">Agenda Personal LB</h1>
-                    <p class="text-xs text-pink-200">Gestión profesional y personal integrada</p>
-                </div>
-            </div>
-            <!-- Fecha actual superior derecha -->
-            <div id="header-date" class="text-sm bg-white/10 px-3 py-1 rounded-lg backdrop-blur-sm"></div>
+  <!-- CABECERA EXCLUSIVA PARA IMPRESIÓN Y EXPORTACIÓN A PDF -->
+  <div class="print-only-header">
+    <img src="Logo Agenda.jpeg" alt="Logo LB" onerror="this.style.display='none'">
+    <h1>Agenda Personal LB</h1>
+    <div class="print-date" id="printHeaderDate"></div>
+  </div>
+
+  <!-- CABECERA DE LA APLICACIÓN CON MENÚ DESPLEGABLE -->
+  <header class="app-header">
+    <div class="brand-container" onclick="navigate('inicio')" title="Ir a Inicio">
+      <img src="Logo Agenda.jpeg" alt="Logo LB" class="brand-logo" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%239e1f63%22/><text x=%2250%22 y=%2265%22 font-size=%2245%22 font-family=%22Arial%22 font-weight=%22bold%22 fill=%22%23fad4a6%22 text-anchor=%22middle%22>LB</text></svg>'">
+      <span class="brand-title">Agenda Personal LB</span>
+    </div>
+
+    <div class="nav-controls">
+      <button class="menu-btn" onclick="navigate('inicio')">🏠 INICIO</button>
+      <div class="menu-dropdown">
+        <button class="menu-btn" onclick="toggleDropdown()">☰ MENÚ ▼</button>
+        <div id="mainDropdown" class="dropdown-content">
+          <button onclick="navigate('inicio')">🏠 Pantalla Inicio</button>
+          <button onclick="navigate('perfil')">👤 1. Perfil</button>
+          <button onclick="navigate('categorias')">🎨 2. Categorías</button>
+          <button onclick="navigate('calendarios')">📅 3. Calendarios</button>
+          <button onclick="navigate('agenda')">📖 4. Agenda</button>
+          <button onclick="navigate('resumen')">📊 5. Resumen e Informes</button>
+          <button onclick="navigate('ajustes')">⚙️ 6. Ajustes y Sincronización</button>
         </div>
-    </header>
+      </div>
+    </div>
+  </header>
 
-    <!-- Menú Desplegable de Navegación -->
-    <nav class="bg-white shadow-sm border-b border-pink-100 no-print sticky top-0 z-50">
-        <div class="container mx-auto px-4 overflow-x-auto">
-            <ul class="flex space-x-1 py-2 text-sm font-medium whitespace-nowrap">
-                <li><button onclick="switchTab('inicio')" class="tab-btn px-4 py-2 rounded-lg text-brand-darkpink bg-pink-50 hover:bg-pink-100 transition"><i class="fa-solid fa-house mr-2"></i>Inicio</button></li>
-                <li><button onclick="switchTab('perfil')" class="tab-btn px-4 py-2 rounded-lg text-gray-600 hover:bg-pink-50 hover:text-brand-darkpink transition"><i class="fa-solid fa-user mr-2"></i>Perfil</button></li>
-                <li><button onclick="switchTab('categorias')" class="tab-btn px-4 py-2 rounded-lg text-gray-600 hover:bg-pink-50 hover:text-brand-darkpink transition"><i class="fa-solid fa-tags mr-2"></i>Categorías</button></li>
-                <li><button onclick="switchTab('calendarios')" class="tab-btn px-4 py-2 rounded-lg text-gray-600 hover:bg-pink-50 hover:text-brand-darkpink transition"><i class="fa-solid fa-calendar-alt mr-2"></i>Calendarios</button></li>
-                <li><button onclick="switchTab('agenda')" class="tab-btn px-4 py-2 rounded-lg text-gray-600 hover:bg-pink-50 hover:text-brand-darkpink transition"><i class="fa-solid fa-clipboard-list mr-2"></i>Agenda</button></li>
-                <li><button onclick="switchTab('resumen')" class="tab-btn px-4 py-2 rounded-lg text-gray-600 hover:bg-pink-50 hover:text-brand-darkpink transition"><i class="fa-solid fa-chart-pie mr-2"></i>Resumen</button></li>
-                <li><button onclick="switchTab('informe')" class="tab-btn px-4 py-2 rounded-lg text-gray-600 hover:bg-pink-50 hover:text-brand-darkpink transition"><i class="fa-solid fa-file-pdf mr-2"></i>Informe Ejecutivo</button></li>
-                <li><button onclick="switchTab('ajustes')" class="tab-btn px-4 py-2 rounded-lg text-gray-600 hover:bg-pink-50 hover:text-brand-darkpink transition"><i class="fa-solid fa-gear mr-2"></i>Ajustes</button></li>
+  <main>
+    <!-- ========================================================================
+         PANTALLA PRINCIPAL: INICIO (12 Bloques del diseño adjunto)
+         ======================================================================== -->
+    <section id="view-inicio" class="section-view active">
+      <div class="home-grid">
+        <div class="home-tile tile-hogar" onclick="openCategoryInAgenda('Hogar')">HOGAR</div>
+        <div class="home-tile tile-trabajo" onclick="openCategoryInAgenda('Trabajo')">TRABAJO</div>
+        <div class="home-tile tile-finanzas" onclick="openCategoryInAgenda('Finanzas')">FINANZAS</div>
+        
+        <div class="home-tile tile-mascotas" onclick="openCategoryInAgenda('Mascotas')">MASCOTAS</div>
+        <div class="home-tile tile-salud" onclick="openCategoryInAgenda('Salud')">SALUD</div>
+        <div class="home-tile tile-cumpleanos" onclick="openCategoryInAgenda('Cumpleaños')">CUMPLEAÑOS</div>
+        
+        <div class="home-tile tile-agenda" onclick="openCategoryInAgenda('TODAS')">AGENDA</div>
+        <div class="home-tile tile-anual" onclick="openCalendarMode('anual')">PLANNING ANUAL</div>
+        <div class="home-tile tile-mensual" onclick="openCalendarMode('mensual')">PLANNING MENSUAL</div>
+        
+        <div class="home-tile tile-semanal" onclick="openCalendarMode('semanal')">PLANNING SEMANAL</div>
+        <div class="home-tile tile-resumen" onclick="navigate('resumen')">RESUMEN</div>
+        <div class="home-tile tile-informes" onclick="openExecutiveReport()">INFORMES</div>
+      </div>
+    </section>
+
+    <!-- ========================================================================
+         PESTAÑA 1: PERFIL (Datos Personales y Datos de Trabajo)
+         ======================================================================== -->
+    <section id="view-perfil" class="section-view">
+      <div class="card">
+        <div class="section-header">
+          <h2 class="section-title">👤 1. Perfil Personal y Profesional</h2>
+          <div class="no-print">
+            <button class="btn btn-outline" onclick="printCurrentView()">🖨️ Imprimir PDF</button>
+          </div>
+        </div>
+
+        <form id="profileForm" onsubmit="saveProfile(event)">
+          <h3 style="margin-bottom: 12px; color: var(--brand-secondary);">Datos Personales</h3>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Nombre y apellidos:</label>
+              <input type="text" id="profName" placeholder="Ej. Lorena Borrell">
+            </div>
+            <div class="form-group">
+              <label>Dirección:</label>
+              <input type="text" id="profAddress" placeholder="Calle, número, ciudad...">
+            </div>
+            <div class="form-group">
+              <label>Teléfono:</label>
+              <input type="tel" id="profPhone" placeholder="+34 600 000 000">
+            </div>
+            <div class="form-group">
+              <label>Correo electrónico:</label>
+              <input type="email" id="profEmail" placeholder="correo@ejemplo.com">
+            </div>
+          </div>
+
+          <hr style="border: none; border-top: 2px dashed var(--border-color); margin: 20px 0;">
+
+          <h3 style="margin-bottom: 12px; color: var(--brand-secondary);">Datos de Trabajo</h3>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Lugar de Trabajo:</label>
+              <input type="text" id="workPlace" placeholder="Centro u organización">
+            </div>
+            <div class="form-group">
+              <label>Dirección:</label>
+              <input type="text" id="workAddress" placeholder="Dirección laboral">
+            </div>
+            <div class="form-group">
+              <label>Teléfono:</label>
+              <input type="tel" id="workPhone" placeholder="Teléfono laboral">
+            </div>
+            <div class="form-group">
+              <label>Extensión:</label>
+              <input type="text" id="workExt" placeholder="Extensión interna">
+            </div>
+            <div class="form-group">
+              <label>Correo electrónico:</label>
+              <input type="email" id="workEmail" placeholder="trabajo@ejemplo.com">
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary no-print">💾 Guardar Datos de Perfil</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- ========================================================================
+         PESTAÑA 2: CATEGORÍAS (Añadir, editar, eliminar e imprimir)
+         ======================================================================== -->
+    <section id="view-categorias" class="section-view">
+      <div class="card">
+        <div class="section-header">
+          <h2 class="section-title">🎨 2. Gestión de Categorías</h2>
+          <button class="btn btn-outline no-print" onclick="printCurrentView()">🖨️ Imprimir Listado en PDF</button>
+        </div>
+
+        <form id="categoryForm" class="no-print" onsubmit="saveCategory(event)" style="margin-bottom: 20px;">
+          <input type="hidden" id="catEditIndex" value="-1">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Nombre de la categoría:</label>
+              <input type="text" id="catName" required placeholder="Ej. Formación, Proyectos...">
+            </div>
+            <div class="form-group">
+              <label>Color de la categoría:</label>
+              <input type="color" id="catColor" value="#ffaaa5" style="height: 42px; cursor: pointer;">
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary" id="catSubmitBtn">➕ Añadir Categoría</button>
+        </form>
+
+        <h3 style="margin-bottom: 12px;">Listado de Categorías Registradas</h3>
+        <div id="categoriesList" class="form-grid"></div>
+      </div>
+    </section>
+
+    <!-- ========================================================================
+         PESTAÑA 3: CALENDARIOS (Anual, Mensual, Semanal y Personalizado)
+         ======================================================================== -->
+    <section id="view-calendarios" class="section-view">
+      <div class="card">
+        <div class="section-header">
+          <h2 class="section-title">📅 3. Calendarios de Registros</h2>
+          <div class="no-print" style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button class="btn btn-outline" onclick="setCalendarView('anual')">Anual</button>
+            <button class="btn btn-outline" onclick="setCalendarView('mensual')">Mensual</button>
+            <button class="btn btn-outline" onclick="setCalendarView('semanal')">Semanal</button>
+            <button class="btn btn-outline" onclick="setCalendarView('personalizado')">Personalizado</button>
+            <button class="btn btn-primary" onclick="printCurrentView()">🖨️ Imprimir en PDF</button>
+          </div>
+        </div>
+
+        <!-- Controles de fecha según la vista seleccionada -->
+        <div id="calendarControls" class="no-print" style="margin-bottom: 16px; display:flex; gap:12px; align-items:flex-end; flex-wrap:wrap;">
+          <div class="form-group" id="calYearGroup">
+            <label>Año:</label>
+            <input type="number" id="calYearInput" value="2026" onchange="renderCalendar()">
+          </div>
+          <div class="form-group" id="calMonthGroup">
+            <label>Mes:</label>
+            <select id="calMonthInput" onchange="renderCalendar()">
+              <option value="0">Enero</option><option value="1">Febrero</option><option value="2">Marzo</option>
+              <option value="3">Abril</option><option value="4">Mayo</option><option value="5">Junio</option>
+              <option value="6">Julio</option><option value="7">Agosto</option><option value="8">Septiembre</option>
+              <option value="9">Octubre</option><option value="10">Noviembre</option><option value="11">Diciembre</option>
+            </select>
+          </div>
+          <div class="form-group" id="calCustomFromGroup" style="display:none;">
+            <label>Fecha desde:</label>
+            <input type="date" id="calFromDate" onchange="renderCalendar()">
+          </div>
+          <div class="form-group" id="calCustomToGroup" style="display:none;">
+            <label>Fecha hasta:</label>
+            <input type="date" id="calToDate" onchange="renderCalendar()">
+          </div>
+        </div>
+
+        <!-- Contenedor dinámico del calendario -->
+        <div id="calendarOutput"></div>
+      </div>
+    </section>
+
+    <!-- ========================================================================
+         PESTAÑA 4: AGENDA (Registros del día, formulario, subtareas e importe €)
+         ======================================================================== -->
+    <section id="view-agenda" class="section-view">
+      <div class="card no-print">
+        <div class="section-header">
+          <h2 class="section-title" id="agendaFormTitle">➕ Añadir Nuevo Registro en la Agenda</h2>
+        </div>
+
+        <form id="agendaForm" onsubmit="saveAgendaRecord(event)">
+          <input type="hidden" id="recId" value="">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Título / Concepto del registro:</label>
+              <input type="text" id="recTitle" required placeholder="Ej. Reunión de equipo, Compra mensual...">
+            </div>
+            <div class="form-group">
+              <label>Tipo:</label>
+              <select id="recType" onchange="toggleAmountField()">
+                <option value="Evento">Evento</option>
+                <option value="Tarea">Tarea</option>
+                <option value="Reunión">Reunión</option>
+                <option value="Cumpleaños">Cumpleaños</option>
+                <option value="Entrevista">Entrevista</option>
+                <option value="Curso">Curso</option>
+                <option value="Ingreso">Ingreso</option>
+                <option value="Gasto">Gasto</option>
+                <option value="Ahorro">Ahorro</option>
+                <option value="Deuda">Deuda</option>
+                <option value="Otro">Otro</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Categoría:</label>
+              <select id="recCategory"></select>
+            </div>
+            <div class="form-group" id="amountFieldGroup">
+              <label>Importe (€) (para Finanzas / Ingresos / Gastos):</label>
+              <input type="number" step="0.01" id="recAmount" placeholder="0.00">
+            </div>
+            <div class="form-group">
+              <label>Fecha inicio:</label>
+              <input type="date" id="recStartDate" required>
+            </div>
+            <div class="form-group">
+              <label>Fecha fin:</label>
+              <input type="date" id="recEndDate">
+            </div>
+            <div class="form-group">
+              <label>Ubicación:</label>
+              <input type="text" id="recLocation" placeholder="Lugar o enlace">
+            </div>
+            <div class="form-group">
+              <label>Personas de contacto:</label>
+              <input type="text" id="recContacts" placeholder="Nombres o teléfonos">
+            </div>
+          </div>
+
+          <!-- Checklist de Subtareas -->
+          <div style="background: var(--bg-main); padding: 14px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 14px;">
+            <label style="font-weight:700; display:block; margin-bottom:8px;">📋 Subtareas (Checklist):</label>
+            <div style="display:flex; gap:8px; margin-bottom:10px;">
+              <input type="text" id="newSubtaskInput" placeholder="Escribe una subtarea y pulsa Añadir..." style="flex:1; padding:8px; border-radius:6px; border:1px solid var(--border-color);">
+              <button type="button" class="btn btn-secondary" onclick="addDraftSubtask()">➕ Añadir Subtarea</button>
+            </div>
+            <ul id="draftSubtasksList" class="subtask-list"></ul>
+          </div>
+
+          <div style="display:flex; align-items:center; gap:10px; margin-bottom:16px;">
+            <input type="checkbox" id="recManualComplete" style="width:20px; height:20px; cursor:pointer;">
+            <label for="recManualComplete" style="font-weight:700; cursor:pointer;">Completado: Sí / No (Marcar como completada manualmente)</label>
+          </div>
+
+          <div style="display:flex; gap:10px;">
+            <button type="submit" class="btn btn-primary">💾 Guardar Registro</button>
+            <button type="button" class="btn btn-outline" onclick="resetAgendaForm()">Limpiar Formulario</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Listado de registros (Por defecto muestra el día actual o filtro activo) -->
+      <div class="card">
+        <div class="section-header">
+          <h2 class="section-title">📖 Registros de la Agenda</h2>
+          <div class="no-print" style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+            <label style="font-size:0.85rem; font-weight:700;">Día:</label>
+            <input type="date" id="agendaFilterDate" onchange="renderAgendaList()" style="padding:6px; border-radius:6px; border:1px solid var(--border-color);">
+            <button class="btn btn-sm btn-outline" onclick="showAllDatesInAgenda()">Ver todas las fechas</button>
+            <select id="agendaFilterCategory" onchange="renderAgendaList()" style="padding:6px; border-radius:6px; border:1px solid var(--border-color);">
+              <option value="TODAS">Todas las categorías</option>
+            </select>
+            <button class="btn btn-sm btn-primary" onclick="printCurrentView()">🖨️ Imprimir en PDF</button>
+          </div>
+        </div>
+
+        <div id="agendaRecordsContainer"></div>
+      </div>
+    </section>
+
+    <!-- ========================================================================
+         PESTAÑA 5: RESUMEN E INFORME EJECUTIVO
+         ======================================================================== -->
+    <section id="view-resumen" class="section-view">
+      <div class="card">
+        <div class="section-header">
+          <h2 class="section-title">📊 5. Resumen General e Informe Ejecutivo</h2>
+          <button class="btn btn-primary no-print" onclick="printCurrentView()">🖨️ Imprimir Informe en PDF</button>
+        </div>
+
+        <!-- Bloques de reflexión: Objetivos, Logros y No ha funcionado -->
+        <div class="form-grid" style="margin-bottom: 20px;">
+          <div class="form-group">
+            <label>🎯 Objetivos:</label>
+            <textarea id="sumObjetivos" rows="4" placeholder="Escribe aquí tus objetivos..." onchange="saveSummaryNotes()"></textarea>
+          </div>
+          <div class="form-group">
+            <label>🏆 Logros:</label>
+            <textarea id="sumLogros" rows="4" placeholder="Registra los logros alcanzados..." onchange="saveSummaryNotes()"></textarea>
+          </div>
+          <div class="form-group">
+            <label>⚠️ No ha funcionado (A mejorar):</label>
+            <textarea id="sumNoFunciono" rows="4" placeholder="Aspectos que no han funcionado..." onchange="saveSummaryNotes()"></textarea>
+          </div>
+        </div>
+
+        <!-- Indicadores de Tareas, Citas y Cumpleaños -->
+        <h3 style="margin-bottom: 10px; color: var(--brand-primary);">Estadísticas de Actividad</h3>
+        <div class="kpi-grid" id="activityKpiGrid"></div>
+
+        <!-- Resumen Financiero -->
+        <h3 style="margin-bottom: 10px; color: var(--brand-primary);">💰 Resumen Financiero</h3>
+        <div class="kpi-grid" id="financeKpiGrid"></div>
+
+        <!-- Informe Ejecutivo (Semanal, Mensual, Anual y Gráficos Corporativos) -->
+        <hr style="border:none; border-top:2px solid var(--border-color); margin:22px 0;">
+        <div class="section-header" id="executiveReportAnchor">
+          <h3 class="section-title">📈 Informe Ejecutivo y Evaluación de Desempeño</h3>
+          <div class="no-print" style="display:flex; gap:8px;">
+            <button class="btn btn-sm btn-outline" onclick="renderExecutiveReport('semanal')">Resumen Semanal</button>
+            <button class="btn btn-sm btn-outline" onclick="renderExecutiveReport('mensual')">Resumen Mensual</button>
+            <button class="btn btn-sm btn-outline" onclick="renderExecutiveReport('anual')">Resumen Anual</button>
+          </div>
+        </div>
+
+        <div id="executiveReportContent"></div>
+      </div>
+    </section>
+
+    <!-- ========================================================================
+         PESTAÑA 6: AJUSTES, COPIA DE SEGURIDAD Y SINCRONIZACIÓN GITHUB
+         ======================================================================== -->
+    <section id="view-ajustes" class="section-view">
+      <div class="card">
+        <div class="section-header">
+          <h2 class="section-title">⚙️ 6. Ajustes del Sistema y Sincronización</h2>
+        </div>
+
+        <!-- Apariencia -->
+        <div style="margin-bottom: 24px;">
+          <h3 style="margin-bottom: 8px;">🌓 Modo Claro / Oscuro</h3>
+          <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 10px;">Cambia el aspecto visual de la interfaz adaptando los colores corporativos.</p>
+          <button class="btn btn-primary" onclick="toggleDarkMode()">Alternar Modo Claro / Oscuro</button>
+        </div>
+
+        <hr style="border:none; border-top:1px solid var(--border-color); margin:20px 0;">
+
+        <!-- Copia de seguridad local -->
+        <div style="margin-bottom: 24px;">
+          <h3 style="margin-bottom: 8px;">💾 Copia de Seguridad (Backup en archivo JSON)</h3>
+          <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 12px;">Descarga una copia de todos tus registros o restaura un archivo guardado anteriormente.</p>
+          <div style="display:flex; gap:12px; flex-wrap:wrap;">
+            <button class="btn btn-secondary" onclick="exportBackupJSON()">⬇️ Crear Copia de Seguridad</button>
+            <label class="btn btn-outline" style="cursor:pointer;">
+              ⬆️ Restaurar Copia de Seguridad
+              <input type="file" accept=".json" style="display:none;" onchange="importBackupJSON(event)">
+            </label>
+          </div>
+        </div>
+
+        <hr style="border:none; border-top:1px solid var(--border-color); margin:20px 0;">
+
+        <!-- Sincronización en tiempo real mediante GitHub Token (Gist) -->
+        <div>
+          <h3 style="margin-bottom: 8px;">☁️ Sincronizar datos en tiempo real (GitHub Token - Opción A)</h3>
+          <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 12px;">
+            Introduce tu Token de GitHub (con permiso <code>gist</code>). Si dejas el ID del Gist vacío, la aplicación creará automáticamente el archivo privado <code>agenda_lb_data.json</code> en tu cuenta de GitHub en el primer envío.
+          </p>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Token Personal de GitHub (ghp_...):</label>
+              <input type="password" id="ghToken" placeholder="Pega aquí tu token de GitHub">
+            </div>
+            <div class="form-group">
+              <label>ID de Sincronización (Gist ID - se rellena solo):</label>
+              <input type="text" id="ghGistId" placeholder="Automático tras primera sincronización">
+            </div>
+          </div>
+          <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:8px;">
+            <button class="btn btn-primary" onclick="saveGitHubConfigAndPush()">🔄 Guardar y Subir Datos a GitHub</button>
+            <button class="btn btn-outline" onclick="pullFromGitHub()">⬇️ Descargar Datos desde GitHub ahora</button>
+          </div>
+          <p id="syncStatusMsg" style="margin-top: 10px; font-weight: 700; font-size: 0.9rem;"></p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    /* ==========================================================================
+       LÓGICA DE PROGRAMACIÓN EN JAVASCRIPT
+       ========================================================================== */
+
+    const STORAGE_KEY = 'AGENDA_PERSONAL_LB_DATA_V1';
+
+    // Estado inicial con las categorías y colores exactos de la pantalla de inicio
+    let state = {
+      darkMode: false,
+      profile: {
+        name: '', address: '', phone: '', email: '',
+        workPlace: '', workAddress: '', workPhone: '', workExt: '', workEmail: ''
+      },
+      categories: [
+        { name: 'Hogar', color: '#54a835' },
+        { name: 'Trabajo', color: '#ffaaa5' },
+        { name: 'Finanzas', color: '#ffe2d1' },
+        { name: 'Mascotas', color: '#ecf385' },
+        { name: 'Salud', color: '#08789b' },
+        { name: 'Cumpleaños', color: '#b4d4ee' }
+      ],
+      records: [],
+      summary: {
+        objetivos: '',
+        logros: '',
+        noFunciono: ''
+      },
+      github: {
+        token: '',
+        gistId: ''
+      }
+    };
+
+    // Variables auxiliares para la interfaz
+    let draftSubtasks = [];
+    let currentCalendarMode = 'mensual';
+    let currentExecutivePeriod = 'mensual';
+    let showAllAgendaDates = false;
+
+    // 1. INICIALIZACIÓN AL CARGAR LA PÁGINA
+    window.addEventListener('DOMContentLoaded', () => {
+      loadLocalData();
+      setupManifestPWA();
+      
+      // Inicializar selectores de fecha en el día actual
+      const todayISO = new Date().toISOString().split('T')[0];
+      document.getElementById('recStartDate').value = todayISO;
+      document.getElementById('agendaFilterDate').value = todayISO;
+      document.getElementById('calYearInput').value = new Date().getFullYear();
+      document.getElementById('calMonthInput').value = new Date().getMonth();
+      document.getElementById('printHeaderDate').textContent = new Date().toLocaleDateString('es-ES', {
+        day: '2-digit', month: '2-digit', year: 'numeric'
+      });
+
+      refreshAllUI();
+
+      // Si hay un token de GitHub configurado, sincronizar al abrir la app
+      if (state.github.token && state.github.gistId) {
+        pullFromGitHub(true);
+      }
+    });
+
+    // Cerrar el menú desplegable si se hace clic fuera de él
+    window.addEventListener('click', (e) => {
+      if (!e.target.closest('.menu-dropdown')) {
+        document.getElementById('mainDropdown').classList.remove('show');
+      }
+    });
+
+    function toggleDropdown() {
+      document.getElementById('mainDropdown').classList.toggle('show');
+    }
+
+    // 2. NAVEGACIÓN ENTRE PESTAÑAS
+    function navigate(viewName) {
+      document.querySelectorAll('.section-view').forEach(sec => sec.classList.remove('active'));
+      const target = document.getElementById(`view-${viewName}`);
+      if (target) target.classList.add('active');
+      document.getElementById('mainDropdown').classList.remove('show');
+
+      if (viewName === 'calendarios') renderCalendar();
+      if (viewName === 'agenda') renderAgendaList();
+      if (viewName === 'resumen') {
+        renderSummaryDashboard();
+        renderExecutiveReport(currentExecutivePeriod);
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Accesos directos desde los 12 botones de la pantalla INICIO
+    function openCategoryInAgenda(categoryName) {
+      navigate('agenda');
+      const filterSelect = document.getElementById('agendaFilterCategory');
+      filterSelect.value = categoryName;
+      showAllAgendaDates = true; // Mostrar todos los registros de esa categoría
+      renderAgendaList();
+    }
+
+    function openCalendarMode(mode) {
+      currentCalendarMode = mode;
+      navigate('calendarios');
+      setCalendarView(mode);
+    }
+
+    function openExecutiveReport() {
+      navigate('resumen');
+      setTimeout(() => {
+        document.getElementById('executiveReportAnchor').scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    }
+
+    // 3. GUARDADO LOCAL Y SINCRONIZACIÓN AUTOMÁTICA
+    function saveLocalData(triggerCloudSync = true) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      if (triggerCloudSync && state.github.token) {
+        pushToGitHub(true);
+      }
+    }
+
+    function loadLocalData() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        try {
+          const parsed = JSON.parse(raw);
+          state = { ...state, ...parsed };
+        } catch (err) {
+          console.error('Error leyendo datos locales:', err);
+        }
+      }
+      if (state.darkMode) {
+        document.body.classList.add('dark-mode');
+      }
+    }
+
+    function refreshAllUI() {
+      // Perfil
+      document.getElementById('profName').value = state.profile.name || '';
+      document.getElementById('profAddress').value = state.profile.address || '';
+      document.getElementById('profPhone').value = state.profile.phone || '';
+      document.getElementById('profEmail').value = state.profile.email || '';
+      document.getElementById('workPlace').value = state.profile.workPlace || '';
+      document.getElementById('workAddress').value = state.profile.workAddress || '';
+      document.getElementById('workPhone').value = state.profile.workPhone || '';
+      document.getElementById('workExt').value = state.profile.workExt || '';
+      document.getElementById('workEmail').value = state.profile.workEmail || '';
+
+      // Notas de Resumen
+      document.getElementById('sumObjetivos').value = state.summary.objetivos || '';
+      document.getElementById('sumLogros').value = state.summary.logros || '';
+      document.getElementById('sumNoFunciono').value = state.summary.noFunciono || '';
+
+      // GitHub
+      document.getElementById('ghToken').value = state.github.token || '';
+      document.getElementById('ghGistId').value = state.github.gistId || '';
+
+      renderCategories();
+      renderAgendaList();
+      renderSummaryDashboard();
+      renderExecutiveReport(currentExecutivePeriod);
+    }
+
+    // 4. PESTAÑA 1: PERFIL
+    function saveProfile(e) {
+      e.preventDefault();
+      state.profile = {
+        name: document.getElementById('profName').value.trim(),
+        address: document.getElementById('profAddress').value.trim(),
+        phone: document.getElementById('profPhone').value.trim(),
+        email: document.getElementById('profEmail').value.trim(),
+        workPlace: document.getElementById('workPlace').value.trim(),
+        workAddress: document.getElementById('workAddress').value.trim(),
+        workPhone: document.getElementById('workPhone').value.trim(),
+        workExt: document.getElementById('workExt').value.trim(),
+        workEmail: document.getElementById('workEmail').value.trim()
+      };
+      saveLocalData();
+      alert('✅ Datos de Perfil guardados correctamente.');
+    }
+
+    // 5. PESTAÑA 2: CATEGORÍAS
+    function renderCategories() {
+      const listEl = document.getElementById('categoriesList');
+      const selectRec = document.getElementById('recCategory');
+      const selectFilter = document.getElementById('agendaFilterCategory');
+      const currentFilterVal = selectFilter.value || 'TODAS';
+
+      listEl.innerHTML = '';
+      selectRec.innerHTML = '';
+      selectFilter.innerHTML = '<option value="TODAS">Todas las categorías</option>';
+
+      state.categories.forEach((cat, idx) => {
+        // Tarjeta visual de la categoría
+        const item = document.createElement('div');
+        item.style.cssText = `display:flex; justify-content:space-between; align-items:center; padding:12px; border-radius:8px; border:1px solid var(--border-color); border-left:10px solid ${cat.color}; background:var(--bg-main);`;
+        item.innerHTML = `
+          <div>
+            <strong style="font-size:1.05rem;">${cat.name}</strong>
+            <div style="font-size:0.8rem; color:var(--text-muted);">${cat.color}</div>
+          </div>
+          <div class="no-print" style="display:flex; gap:6px;">
+            <button class="btn btn-sm btn-outline" onclick="editCategory(${idx})">✏️</button>
+            <button class="btn btn-sm btn-danger" onclick="deleteCategory(${idx})">🗑️</button>
+          </div>
+        `;
+        listEl.appendChild(item);
+
+        // Opciones en los selectores de Agenda
+        selectRec.innerHTML += `<option value="${cat.name}">${cat.name}</option>`;
+        selectFilter.innerHTML += `<option value="${cat.name}">${cat.name}</option>`;
+      });
+
+      selectFilter.value = currentFilterVal;
+    }
+
+    function saveCategory(e) {
+      e.preventDefault();
+      const name = document.getElementById('catName').value.trim();
+      const color = document.getElementById('catColor').value;
+      const editIdx = parseInt(document.getElementById('catEditIndex').value, 10);
+
+      if (editIdx >= 0) {
+        state.categories[editIdx] = { name, color };
+        document.getElementById('catEditIndex').value = '-1';
+        document.getElementById('catSubmitBtn').textContent = '➕ Añadir Categoría';
+      } else {
+        state.categories.push({ name, color });
+      }
+
+      document.getElementById('catName').value = '';
+      saveLocalData();
+      renderCategories();
+    }
+
+    function editCategory(idx) {
+      const cat = state.categories[idx];
+      document.getElementById('catName').value = cat.name;
+      document.getElementById('catColor').value = cat.color;
+      document.getElementById('catEditIndex').value = idx;
+      document.getElementById('catSubmitBtn').textContent = '💾 Actualizar Categoría';
+    }
+
+    function deleteCategory(idx) {
+      if (!confirm(`¿Seguro que deseas eliminar la categoría "${state.categories[idx].name}"?`)) return;
+      state.categories.splice(idx, 1);
+      saveLocalData();
+      renderCategories();
+    }
+
+    function getCategoryColor(catName) {
+      const found = state.categories.find(c => c.name.toLowerCase() === (catName || '').toLowerCase());
+      return found ? found.color : '#9e1f63';
+    }
+
+    // 6. PESTAÑA 4: AGENDA, SUBTAREAS Y CÁLCULO AUTOMÁTICO DE PROGRESO
+    function addDraftSubtask() {
+      const input = document.getElementById('newSubtaskInput');
+      const text = input.value.trim();
+      if (!text) return;
+      draftSubtasks.push({ text, done: false });
+      input.value = '';
+      renderDraftSubtasks();
+    }
+
+    function renderDraftSubtasks() {
+      const ul = document.getElementById('draftSubtasksList');
+      ul.innerHTML = '';
+      draftSubtasks.forEach((st, idx) => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+          <input type="checkbox" ${st.done ? 'checked' : ''} onchange="draftSubtasks[${idx}].done = this.checked">
+          <span style="flex:1; ${st.done ? 'text-decoration:line-through;' : ''}">${st.text}</span>
+          <button type="button" class="btn btn-sm btn-danger" onclick="draftSubtasks.splice(${idx},1); renderDraftSubtasks();">✕</button>
+        `;
+        ul.appendChild(li);
+      });
+    }
+
+    // Calcula el estado de completado según las reglas exactas de tus requisitos
+    function getRecordStatusInfo(rec) {
+      const totalSub = rec.subtasks ? rec.subtasks.length : 0;
+      const doneSub = totalSub > 0 ? rec.subtasks.filter(s => s.done).length : 0;
+
+      if (totalSub > 0) {
+        if (doneSub === 0 && !rec.manualComplete) {
+          return { state: 'PENDIENTE', pctGreen: 0, pctRed: 100 };
+        } else if (doneSub === totalSub || rec.manualComplete) {
+          return { state: 'COMPLETADO', pctGreen: 100, pctRed: 0 };
+        } else {
+          const pctGreen = Math.round((doneSub / totalSub) * 100);
+          return { state: 'PARCIAL', pctGreen, pctRed: 100 - pctGreen };
+        }
+      } else {
+        return rec.manualComplete
+          ? { state: 'COMPLETADO', pctGreen: 100, pctRed: 0 }
+          : { state: 'PENDIENTE', pctGreen: 0, pctRed: 100 };
+      }
+    }
+
+    function saveAgendaRecord(e) {
+      e.preventDefault();
+      const id = document.getElementById('recId').value || ('rec_' + Date.now());
+      const newRecord = {
+        id,
+        title: document.getElementById('recTitle').value.trim(),
+        type: document.getElementById('recType').value,
+        category: document.getElementById('recCategory').value,
+        amount: parseFloat(document.getElementById('recAmount').value) || 0,
+        startDate: document.getElementById('recStartDate').value,
+        endDate: document.getElementById('recEndDate').value || document.getElementById('recStartDate').value,
+        location: document.getElementById('recLocation').value.trim(),
+        contacts: document.getElementById('recContacts').value.trim(),
+        subtasks: [...draftSubtasks],
+        manualComplete: document.getElementById('recManualComplete').checked
+      };
+
+      const existingIdx = state.records.findIndex(r => r.id === id);
+      if (existingIdx >= 0) {
+        state.records[existingIdx] = newRecord;
+      } else {
+        state.records.push(newRecord);
+      }
+
+      document.getElementById('agendaFilterDate').value = newRecord.startDate;
+      showAllAgendaDates = false;
+      resetAgendaForm();
+      saveLocalData();
+      renderAgendaList();
+    }
+
+    function resetAgendaForm() {
+      document.getElementById('recId').value = '';
+      document.getElementById('recTitle').value = '';
+      document.getElementById('recType').value = 'Evento';
+      document.getElementById('recAmount').value = '';
+      document.getElementById('recEndDate').value = '';
+      document.getElementById('recLocation').value = '';
+      document.getElementById('recContacts').value = '';
+      document.getElementById('recManualComplete').checked = false;
+      document.getElementById('agendaFormTitle').textContent = '➕ Añadir Nuevo Registro en la Agenda';
+      draftSubtasks = [];
+      renderDraftSubtasks();
+    }
+
+    function showAllDatesInAgenda() {
+      showAllAgendaDates = true;
+      renderAgendaList();
+    }
+
+    function renderAgendaList() {
+      const container = document.getElementById('agendaRecordsContainer');
+      const filterDate = document.getElementById('agendaFilterDate').value;
+      const filterCat = document.getElementById('agendaFilterCategory').value;
+
+      let filtered = state.records.filter(rec => {
+        const matchCat = (filterCat === 'TODAS') || (rec.category === filterCat);
+        const matchDate = showAllAgendaDates || !filterDate || (rec.startDate === filterDate);
+        return matchCat && matchDate;
+      });
+
+      // Ordenar por fecha
+      filtered.sort((a, b) => (a.startDate || '').localeCompare(b.startDate || ''));
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<p style="color:var(--text-muted); padding:12px;">No hay registros para el filtro seleccionado.</p>`;
+        return;
+      }
+
+      container.innerHTML = '';
+      filtered.forEach(rec => {
+        const statusInfo = getRecordStatusInfo(rec);
+        const catColor = getCategoryColor(rec.category);
+
+        let statusBadgeHTML = '';
+        if (statusInfo.state === 'PENDIENTE') {
+          statusBadgeHTML = `<span class="badge-pendiente">PENDIENTE</span>`;
+        } else if (statusInfo.state === 'COMPLETADO') {
+          statusBadgeHTML = `<span class="badge-completado">COMPLETADO</span>`;
+        } else {
+          statusBadgeHTML = `
+            <div class="dual-progress-container">
+              <div class="dual-progress-bar">
+                <div class="progress-green" style="width:${statusInfo.pctGreen}%">${statusInfo.pctGreen}% Completado</div>
+                <div class="progress-red" style="width:${statusInfo.pctRed}%">${statusInfo.pctRed}% Pendiente</div>
+              </div>
+            </div>
+          `;
+        }
+
+        let subtasksHTML = '';
+        if (rec.subtasks && rec.subtasks.length > 0) {
+          subtasksHTML = `<ul class="subtask-list">` + rec.subtasks.map((st, sIdx) => `
+            <li>
+              <input type="checkbox" ${st.done ? 'checked' : ''} onchange="toggleSavedSubtask('${rec.id}', ${sIdx}, this.checked)">
+              <span style="${st.done ? 'text-decoration:line-through; color:var(--text-muted);' : ''}">${st.text}</span>
+            </li>
+          `).join('') + `</ul>`;
+        }
+
+        const amountHTML = rec.amount ? `<span style="font-weight:800; color:var(--brand-primary);"> | 💶 ${rec.amount.toFixed(2)} €</span>` : '';
+
+        const card = document.createElement('div');
+        card.className = 'record-item';
+        card.style.borderLeftColor = catColor;
+        card.innerHTML = `
+          <div class="record-top">
+            <div>
+              <span style="background:${catColor}; color:#000; padding:2px 8px; border-radius:4px; font-size:0.78rem; font-weight:800;">${rec.category}</span>
+              <span style="font-size:0.82rem; font-weight:700; color:var(--text-muted); margin-left:6px;">[${rec.type}]</span>
+              <h3 style="margin-top:6px;">${rec.title}</h3>
+            </div>
+            <div style="text-align:right;">
+              ${statusInfo.state !== 'PARCIAL' ? statusBadgeHTML : ''}
+              <div class="no-print" style="margin-top:6px; display:flex; gap:6px; justify-content:flex-end;">
+                <button class="btn btn-sm btn-outline" onclick="toggleManualComplete('${rec.id}')">✔️ Completar</button>
+                <button class="btn btn-sm btn-outline" onclick="editRecord('${rec.id}')">✏️ Editar</button>
+                <button class="btn btn-sm btn-outline" onclick="printCurrentView()">🖨️ PDF</button>
+                <button class="btn btn-sm btn-danger" onclick="deleteRecord('${rec.id}')">🗑️</button>
+              </div>
+            </div>
+          </div>
+          ${statusInfo.state === 'PARCIAL' ? statusBadgeHTML : ''}
+          <div style="font-size:0.88rem; color:var(--text-muted);">
+            📅 Inicio: <strong>${rec.startDate}</strong> ${rec.endDate && rec.endDate !== rec.startDate ? `| Fin: <strong>${rec.endDate}</strong>` : ''}
+            ${rec.location ? ` | 📍 ${rec.location}` : ''}
+            ${rec.contacts ? ` | 👥 ${rec.contacts}` : ''}
+            ${amountHTML}
+          </div>
+          ${subtasksHTML}
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function toggleSavedSubtask(recId, subIdx, isChecked) {
+      const rec = state.records.find(r => r.id === recId);
+      if (!rec) return;
+      rec.subtasks[subIdx].done = isChecked;
+      // Si todas las subtareas se completan, se marca completado automáticamente
+      const allDone = rec.subtasks.every(s => s.done);
+      rec.manualComplete = allDone;
+      saveLocalData();
+      renderAgendaList();
+    }
+
+    function toggleManualComplete(recId) {
+      const rec = state.records.find(r => r.id === recId);
+      if (!rec) return;
+      rec.manualComplete = !rec.manualComplete;
+      if (rec.subtasks && rec.subtasks.length > 0) {
+        rec.subtasks.forEach(s => s.done = rec.manualComplete);
+      }
+      saveLocalData();
+      renderAgendaList();
+    }
+
+    function editRecord(recId) {
+      const rec = state.records.find(r => r.id === recId);
+      if (!rec) return;
+      document.getElementById('recId').value = rec.id;
+      document.getElementById('recTitle').value = rec.title;
+      document.getElementById('recType').value = rec.type;
+      document.getElementById('recCategory').value = rec.category;
+      document.getElementById('recAmount').value = rec.amount || '';
+      document.getElementById('recStartDate').value = rec.startDate;
+      document.getElementById('recEndDate').value = rec.endDate || '';
+      document.getElementById('recLocation').value = rec.location || '';
+      document.getElementById('recContacts').value = rec.contacts || '';
+      document.getElementById('recManualComplete').checked = !!rec.manualComplete;
+      document.getElementById('agendaFormTitle').textContent = '✏️ Editando Registro: ' + rec.title;
+      draftSubtasks = rec.subtasks ? JSON.parse(JSON.stringify(rec.subtasks)) : [];
+      renderDraftSubtasks();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function deleteRecord(recId) {
+      if (!confirm('¿Deseas eliminar este registro permanentemente?')) return;
+      state.records = state.records.filter(r => r.id !== recId);
+      saveLocalData();
+      renderAgendaList();
+    }
+
+    // 7. PESTAÑA 3: CALENDARIOS (Anual, Mensual, Semanal y Personalizado)
+    function setCalendarView(mode) {
+      currentCalendarMode = mode;
+      document.getElementById('calYearGroup').style.display = (mode === 'personalizado') ? 'none' : 'flex';
+      document.getElementById('calMonthGroup').style.display = (mode === 'mensual') ? 'flex' : 'none';
+      document.getElementById('calCustomFromGroup').style.display = (mode === 'personalizado') ? 'flex' : 'none';
+      document.getElementById('calCustomToGroup').style.display = (mode === 'personalizado') ? 'flex' : 'none';
+      renderCalendar();
+    }
+
+    function renderCalendar() {
+      const out = document.getElementById('calendarOutput');
+      const year = parseInt(document.getElementById('calYearInput').value, 10) || new Date().getFullYear();
+      const month = parseInt(document.getElementById('calMonthInput').value, 10) || 0;
+
+      if (currentCalendarMode === 'mensual') {
+        out.innerHTML = buildMonthGridHTML(year, month);
+      } else if (currentCalendarMode === 'anual') {
+        let html = `<h3 style="margin-bottom:12px;">Planning Anual ${year}</h3><div class="annual-grid">`;
+        for (let m = 0; m < 12; m++) {
+          const mName = new Date(year, m, 1).toLocaleString('es-ES', { month: 'long' });
+          const mPrefix = `${year}-${String(m + 1).padStart(2, '0')}`;
+          const mRecs = state.records.filter(r => (r.startDate || '').startsWith(mPrefix));
+          html += `
+            <div class="mini-month">
+              <h4>${mName} (${mRecs.length})</h4>
+              ${mRecs.length === 0 ? '<p style="font-size:0.78rem; color:var(--text-muted);">Sin registros</p>' : mRecs.map(r => `
+                <div class="cal-pill" style="background:${getCategoryColor(r.category)}; margin-bottom:4px;">
+                  ${r.startDate.slice(8,10)}: ${r.title}
+                </div>
+              `).join('')}
+            </div>
+          `;
+        }
+        html += `</div>`;
+        out.innerHTML = html;
+      } else if (currentCalendarMode === 'semanal') {
+        const now = new Date();
+        const dayOfWeek = now.getDay() === 0 ? 6 : now.getDay() - 1; // Lunes = 0
+        const monday = new Date(now);
+        monday.setDate(now.getDate() - dayOfWeek);
+
+        let html = `<h3 style="margin-bottom:12px;">Planning de la Semana Actual</h3><div class="calendar-month-grid">`;
+        const daysNames = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+        for (let i = 0; i < 7; i++) {
+          const d = new Date(monday);
+          d.setDate(monday.getDate() + i);
+          const iso = d.toISOString().split('T')[0];
+          const dRecs = state.records.filter(r => r.startDate === iso);
+          html += `
+            <div class="cal-day-cell" style="min-height:140px;">
+              <div class="cal-day-header">${daysNames[i]}<br>${iso.slice(8,10)}/${iso.slice(5,7)}</div>
+              ${dRecs.map(r => `<div class="cal-pill" style="background:${getCategoryColor(r.category)}; margin-top:4px;">${r.title}</div>`).join('')}
+            </div>
+          `;
+        }
+        html += `</div>`;
+        out.innerHTML = html;
+      } else if (currentCalendarMode === 'personalizado') {
+        const from = document.getElementById('calFromDate').value || '0000-01-01';
+        const to = document.getElementById('calToDate').value || '9999-12-31';
+        const list = state.records.filter(r => r.startDate >= from && r.startDate <= to);
+        out.innerHTML = `<h3 style="margin-bottom:10px;">Registros entre ${from} y ${to} (${list.length})</h3>` +
+          (list.length === 0 ? '<p>Selecciona un rango de fechas con registros.</p>' : list.map(r => `
+            <div style="padding:10px; border-left:6px solid ${getCategoryColor(r.category)}; background:var(--bg-main); margin-bottom:8px; border-radius:6px;">
+              <strong>${r.startDate}</strong> - [${r.category}] <strong>${r.title}</strong> (${r.type})
+            </div>
+          `).join(''));
+      }
+    }
+
+    function buildMonthGridHTML(year, month) {
+      const daysNames = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
+      let html = `<div class="calendar-month-grid">`;
+      daysNames.forEach(d => html += `<div class="cal-day-header">${d}</div>`);
+
+      const firstDay = new Date(year, month, 1).getDay();
+      const offset = firstDay === 0 ? 6 : firstDay - 1;
+      const totalDays = new Date(year, month + 1, 0).getDate();
+
+      for (let i = 0; i < offset; i++) {
+        html += `<div class="cal-day-cell" style="opacity:0.35;"></div>`;
+      }
+
+      for (let day = 1; day <= totalDays; day++) {
+        const iso = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        const dayRecs = state.records.filter(r => r.startDate === iso);
+        html += `
+          <div class="cal-day-cell">
+            <div class="cal-day-num">${day}</div>
+            ${dayRecs.map(r => `<div class="cal-pill" style="background:${getCategoryColor(r.category)};" title="${r.title}">${r.title}</div>`).join('')}
+          </div>
+        `;
+      }
+      html += `</div>`;
+      return html;
+    }
+
+    // 8. PESTAÑA 5: RESUMEN Y EVALUACIÓN EJECUTIVA CON GRÁFICOS CORPORATIVOS
+    function saveSummaryNotes() {
+      state.summary.objetivos = document.getElementById('sumObjetivos').value;
+      state.summary.logros = document.getElementById('sumLogros').value;
+      state.summary.noFunciono = document.getElementById('sumNoFunciono').value;
+      saveLocalData();
+    }
+
+    function renderSummaryDashboard() {
+      // Tareas
+      const tasks = state.records.filter(r => r.type === 'Tarea');
+      const tasksDone = tasks.filter(r => getRecordStatusInfo(r).state === 'COMPLETADO').length;
+      const tasksPctDone = tasks.length ? Math.round((tasksDone / tasks.length) * 100) : 0;
+      const tasksPctPend = tasks.length ? (100 - tasksPctDone) : 0;
+
+      // Citas (Evento, Reunión, Entrevista, Curso)
+      const appointments = state.records.filter(r => ['Evento', 'Reunión', 'Entrevista', 'Curso'].includes(r.type));
+      const appDone = appointments.filter(r => getRecordStatusInfo(r).state === 'COMPLETADO').length;
+      const appPctDone = appointments.length ? Math.round((appDone / appointments.length) * 100) : 0;
+      const appPctPend = appointments.length ? (100 - appPctDone) : 0;
+
+      // Cumpleaños
+      const birthdays = state.records.filter(r => r.type === 'Cumpleaños' || r.category === 'Cumpleaños').length;
+
+      document.getElementById('activityKpiGrid').innerHTML = `
+        <div class="kpi-box">
+          <h4>📋 Tareas Registradas: ${tasks.length}</h4>
+          <div class="kpi-value">${tasksPctDone}% Completadas</div>
+          <div style="font-size:0.85rem; color:var(--status-red); font-weight:700;">${tasksPctPend}% Pendientes</div>
+        </div>
+        <div class="kpi-box">
+          <h4>🤝 Citas Registradas: ${appointments.length}</h4>
+          <div class="kpi-value">${appPctDone}% Completadas</div>
+          <div style="font-size:0.85rem; color:var(--status-red); font-weight:700;">${appPctPend}% No completadas</div>
+        </div>
+        <div class="kpi-box">
+          <h4>🎂 Cumpleaños</h4>
+          <div class="kpi-value">${birthdays}</div>
+          <div style="font-size:0.85rem; color:var(--text-muted);">Total registrados</div>
+        </div>
+      `;
+
+      // Finanzas
+      const sumByType = (t) => state.records.filter(r => r.type === t).reduce((acc, r) => acc + (Number(r.amount) || 0), 0);
+      const ingresos = sumByType('Ingreso');
+      const gastos = sumByType('Gasto');
+      const ahorro = sumByType('Ahorro');
+      const deudas = sumByType('Deuda');
+
+      document.getElementById('financeKpiGrid').innerHTML = `
+        <div class="kpi-box"><h4>Ingresos Totales</h4><div class="kpi-value" style="color:var(--status-green);">${ingresos.toFixed(2)} €</div></div>
+        <div class="kpi-box"><h4>Gastos Totales</h4><div class="kpi-value" style="color:var(--status-red);">${gastos.toFixed(2)} €</div></div>
+        <div class="kpi-box"><h4>Ahorro</h4><div class="kpi-value">${ahorro.toFixed(2)} €</div></div>
+        <div class="kpi-box"><h4>Deudas</h4><div class="kpi-value">${deudas.toFixed(2)} €</div></div>
+      `;
+    }
+
+    function renderExecutiveReport(period) {
+      currentExecutivePeriod = period;
+      const now = new Date();
+      const filtered = state.records.filter(r => {
+        if (!r.startDate) return false;
+        const d = new Date(r.startDate);
+        if (period === 'semanal') {
+          const diff = Math.abs(now - d) / (1000 * 60 * 60 * 24);
+          return diff <= 7;
+        }
+        if (period === 'mensual') {
+          return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+        }
+        return d.getFullYear() === now.getFullYear();
+      });
+
+      const completed = filtered.filter(r => getRecordStatusInfo(r).state === 'COMPLETADO');
+      const pending = filtered.filter(r => getRecordStatusInfo(r).state !== 'COMPLETADO');
+      const rate = filtered.length ? Math.round((completed.length / filtered.length) * 100) : 0;
+
+      let evaluationText = 'Excelente nivel de cumplimiento. Mantén este ritmo de organización.';
+      if (rate < 50) evaluationText = 'Hay oportunidades importantes de mejora: prioriza cerrar las subtareas abiertas de mayor urgencia.';
+      else if (rate < 80) evaluationText = 'Buen desempeño general, aunque conviene revisar los registros que han quedado en estado parcial o pendiente.';
+
+      document.getElementById('executiveReportContent').innerHTML = `
+        <div style="background:var(--bg-main); padding:16px; border-radius:10px; border:1px solid var(--border-color);">
+          <h4 style="text-transform:uppercase; color:var(--brand-primary); margin-bottom:8px;">
+            Informe Ejecutivo (${period}) — Total registros: ${filtered.length}
+          </h4>
+          <p style="margin-bottom:10px;"><strong>Evaluación del desempeño (${rate}% completado):</strong> ${evaluationText}</p>
+          
+          <!-- Gráfico con los colores corporativos del Logo LB -->
+          <div style="margin: 16px 0;">
+            <div style="font-size:0.85rem; font-weight:700; margin-bottom:4px;">Gráfico Corporativo de Desempeño:</div>
+            <div style="display:flex; height:28px; border-radius:8px; overflow:hidden; border:1px solid var(--brand-dark);">
+              <div style="width:${rate}%; background:var(--brand-primary); color:#fff; display:flex; align-items:center; justify-content:center; font-size:0.8rem; font-weight:800;">
+                ${rate}% Completado
+              </div>
+              <div style="width:${100 - rate}%; background:var(--brand-peach); color:#2d1627; display:flex; align-items:center; justify-content:center; font-size:0.8rem; font-weight:800;">
+                ${100 - rate}% A Mejorar
+              </div>
+            </div>
+          </div>
+
+          <h4 style="margin-top:14px; margin-bottom:6px; color:var(--status-red);">📌 Registros que quedan pendientes (${pending.length}):</h4>
+          ${pending.length === 0 ? '<p style="color:var(--status-green); font-weight:700;">¡Todo al día! No hay registros pendientes en este periodo.</p>' : `
+            <ul style="padding-left:18px; font-size:0.9rem;">
+              ${pending.map(p => `<li><strong>${p.startDate}</strong> - [${p.category}] ${p.title} (${p.type})</li>`).join('')}
             </ul>
+          `}
         </div>
-    </nav>
+      `;
+    }
 
-    <!-- Contenido Principal -->
-    <main class="container mx-auto px-4 py-6 flex-grow">
+    // 9. PESTAÑA 6: AJUSTES, BACKUP Y SINCRONIZACIÓN GITHUB GIST
+    function toggleDarkMode() {
+      state.darkMode = !state.darkMode;
+      document.body.classList.toggle('dark-mode', state.darkMode);
+      saveLocalData();
+    }
 
-        <!-- 1. INICIO -->
-        <section id="tab-inicio" class="tab-content space-y-6">
-            <div class="bg-gradient-to-br from-pink-500 to-brand-purple text-white p-8 rounded-2xl shadow-xl flex flex-col md:flex-row items-center justify-between">
-                <div class="space-y-4 max-w-xl">
-                    <span class="bg-white/20 text-xs px-3 py-1 rounded-full uppercase tracking-wider font-semibold">Panel Principal</span>
-                    <h2 class="text-3xl font-extxl font-bold">Bienvenida a tu Agenda Personal LB</h2>
-                    <p class="text-pink-100 text-sm leading-relaxed">Administra tus eventos, tareas, finanzas y registros diarios con la máxima eficiencia y orden. Todo sincronizado localmente y listo para tus informes ejecutivos.</p>
-                    <div class="pt-2 flex space-x-3">
-                        <button onclick="switchTab('agenda')" class="bg-white text-brand-darkpink px-5 py-2.5 rounded-xl font-bold text-sm shadow hover:bg-pink-50 transition">Ver Agenda de Hoy</button>
-                        <button onclick="switchTab('ajustes')" class="bg-pink-900/40 text-white border border-pink-300/30 px-5 py-2.5 rounded-xl font-bold text-sm hover:bg-pink-900/60 transition">Sincronización GitHub</button>
-                    </div>
-                </div>
-                <div class="mt-6 md:mt-0 bg-white/10 p-6 rounded-2xl backdrop-blur-md border border-white/20 text-center">
-                    <i class="fa-solid fa-calendar-check text-6xl text-pink-200 mb-3"></i>
-                    <p id="inicio-reteo-hoy" class="text-lg font-semibold">Cargando registros...</p>
-                </div>
-            </div>
+    function exportBackupJSON() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state, null, 2));
+      const a = document.createElement('a');
+      a.href = dataStr;
+      a.download = `copia_seguridad_agenda_lb_${new Date().toISOString().split('T')[0]}.json`;
+      a.click();
+    }
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-pink-100">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="font-bold text-gray-700">Tareas Pendientes</h3>
-                        <div class="bg-pink-100 text-brand-darkpink p-3 rounded-xl"><i class="fa-solid fa-list-check"></i></div>
-                    </div>
-                    <p id="stat-tareas" class="text-2xl font-extrabold text-gray-900">0</p>
-                </div>
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-pink-100">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="font-bold text-gray-700">Citas y Reuniones</h3>
-                        <div class="bg-purple-100 text-purple-700 p-3 rounded-xl"><i class="fa-solid fa-handshake"></i></div>
-                    </div>
-                    <p id="stat-citas" class="text-2xl font-extrabold text-gray-900">0</p>
-                </div>
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-pink-100">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="font-bold text-gray-700">Ahorro Actual</h3>
-                        <div class="bg-green-100 text-green-700 p-3 rounded-xl"><i class="fa-solid fa-piggy-bank"></i></div>
-                    </div>
-                    <p id="stat-ahorro" class="text-2xl font-extrabold text-green-600">0.00 €</p>
-                </div>
-            </div>
-        </section>
+    function importBackupJSON(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        try {
+          const imported = JSON.parse(ev.target.result);
+          state = { ...state, ...imported };
+          saveLocalData();
+          refreshAllUI();
+          alert('✅ Copia de seguridad restaurada con éxito.');
+        } catch (err) {
+          alert('❌ El archivo seleccionado no es válido.');
+        }
+      };
+      reader.readAsText(file);
+    }
 
-        <!-- 2. PERFIL -->
-        <section id="tab-perfil" class="tab-content hidden space-y-6">
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-pink-100 max-w-3xl mx-auto">
-                <h3 class="text-xl font-bold text-brand-darkpink mb-4 border-b pb-2"><i class="fa-solid fa-user-gear mr-2"></i>Datos Personales y de Trabajo</h3>
-                <form id="profile-form" onsubmit="saveProfile(event)" class="space-y-4">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Nombre y Apellidos</label>
-                            <input type="text" id="p-nombre" class="w-full border rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-brand-pink focus:outline-none" required>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Teléfono Personal</label>
-                            <input type="text" id="p-telefono" class="w-full border rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-brand-pink focus:outline-none">
-                        </div>
-                        <div class="md:col-span-2">
-                            <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Dirección Personal</label>
-                            <input type="text" id="p-direccion" class="w-full border rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-brand-pink focus:outline-none">
-                        </div>
-                        <div class="md:col-span-2">
-                            <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Correo Electrónico Personal</label>
-                            <input type="email" id="p-email" class="w-full border rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-brand-pink focus:outline-none">
-                        </div>
-                    </div>
+    async function saveGitHubConfigAndPush() {
+      state.github.token = document.getElementById('ghToken').value.trim();
+      state.github.gistId = document.getElementById('ghGistId').value.trim();
+      saveLocalData(false);
+      await pushToGitHub(false);
+    }
 
-                    <h4 class="font-bold text-gray-700 pt-4 border-t">Lugar de Trabajo</h4>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Lugar de Trabajo</label>
-                            <input type="text" id="t-lugar" class="w-full border rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-brand-pink focus:outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Teléfono Trabajo / Extensión</label>
-                            <div class="flex space-x-2">
-                                <input type="text" id="t-telefono" placeholder="Teléfono" class="w-2/3 border rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-brand-pink focus:outline-none">
-                                <input type="text" id="t-ext" placeholder="Ext." class="w-1/3 border rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-brand-pink focus:outline-none">
-                            </div>
-                        </div>
-                        <div class="md:col-span-2">
-                            <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Dirección del Trabajo</label>
-                            <input type="text" id="t-direccion" class="w-full border rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-brand-pink focus:outline-none">
-                        </div>
-                        <div class="md:col-span-2">
-                            <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Correo Electrónico Laboral</label>
-                            <input type="email" id="t-email" class="w-full border rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-brand-pink focus:outline-none">
-                        </div>
-                    </div>
-                    <button type="submit" class="bg-brand-darkpink text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow hover:bg-brand-purple transition"><i class="fa-solid fa-floppy-disk mr-2"></i>Guardar Perfil</button>
-                </form>
-            </div>
-        </section>
+    async function pushToGitHub(silent = false) {
+      const statusEl = document.getElementById('syncStatusMsg');
+      if (!state.github.token) return;
 
-        <!-- 3. CATEGORÍAS -->
-        <section id="tab-categorias" class="tab-content hidden space-y-6">
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-pink-100 max-w-3xl mx-auto">
-                <h3 class="text-xl font-bold text-brand-darkpink mb-4 border-b pb-2"><i class="fa-solid fa-tags mr-2"></i>Gestión de Categorías</h3>
-                <form id="category-form" onsubmit="saveCategory(event)" class="flex gap-3 mb-6">
-                    <input type="text" id="cat-nombre" placeholder="Nombre de la categoría (ej. Mascotas)" class="flex-grow border rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-brand-pink focus:outline-none" required>
-                    <input type="color" id="cat-color" value="#ec4899" class="h-11 w-16 border rounded-xl cursor-pointer p-1">
-                    <button type="submit" class="bg-brand-darkpink text-white px-5 rounded-xl font-bold text-sm shadow hover:bg-brand-purple transition">Añadir</button>
-                </form>
-                <div id="categories-list" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <!-- Dinámico -->
-                </div>
-            </div>
-        </section>
+      if (!silent) statusEl.textContent = '⏳ Sincronizando datos con GitHub...';
 
-        <!-- 4. CALENDARIOS -->
-        <section id="tab-calendarios" class="tab-content hidden space-y-6">
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-pink-100">
-                <div class="flex flex-wrap justify-between items-center mb-6 gap-4">
-                    <h3 class="text-xl font-bold text-brand-darkpink"><i class="fa-solid fa-calendar-days mr-2"></i>Vista de Calendarios y Filtros</h3>
-                    <div class="flex space-x-2">
-                        <button onclick="filterCalendar('anual')" class="cal-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-pink-100 text-brand-darkpink">Anual</button>
-                        <button onclick="filterCalendar('mensual')" class="cal-btn px-3 py-1.5 rounded-lg text-xs font-bold text-gray-600 hover:bg-pink-50">Mensual</button>
-                        <button onclick="filterCalendar('semanal')" class="cal-btn px-3 py-1.5 rounded-lg text-xs font-bold text-gray-600 hover:bg-pink-50">Semanal</button>
-                    </div>
-                </div>
-                <div class="bg-pink-50/50 p-4 rounded-xl mb-4 flex flex-wrap gap-4 items-end">
-                    <div>
-                        <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Fecha Desde</label>
-                        <input type="date" id="filtro-desde" onchange="applyCustomFilter()" class="border rounded-xl p-2 text-sm bg-white">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Fecha Hasta</label>
-                        <input type="date" id="filtro-hasta" onchange="applyCustomFilter()" class="border rounded-xl p-2 text-sm bg-white">
-                    </div>
-                    <button onclick="resetCalendarFilter()" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-xl text-sm font-bold hover:bg-gray-300">Limpiar Filtros</button>
-                </div>
-                <div id="calendar-records-container" class="space-y-3">
-                    <!-- Dinámico -->
-                </div>
-            </div>
-        </section>
+      const payload = {
+        description: "Datos sincronizados de Agenda Personal LB",
+        public: false,
+        files: {
+          "agenda_lb_data.json": {
+            content: JSON.stringify({
+              profile: state.profile,
+              categories: state.categories,
+              records: state.records,
+              summary: state.summary,
+              darkMode: state.darkMode
+            }, null, 2)
+          }
+        }
+      };
 
-        <!-- 5. AGENDA -->
-        <section id="tab-agenda" class="tab-content hidden space-y-6">
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- Formulario Nuevo Registro -->
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-pink-100 lg:col-span-1">
-                    <h3 class="text-lg font-bold text-brand-darkpink mb-4 border-b pb-2"><i class="fa-solid fa-plus-circle mr-2"></i>Añadir Nuevo Registro</h3>
-                    <form id="agenda-form" onsubmit="saveAgendaRecord(event)" class="space-y-3">
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Tipo</label>
-                            <select id="ag-tipo" class="w-full border rounded-xl p-2 text-sm focus:ring-2 focus:ring-brand-pink focus:outline-none">
-                                <option value="Evento">Evento</option>
-                                <option value="Tarea">Tarea</option>
-                                <option value="Reunión">Reunión</option>
-                                <option value="Cumpleaños">Cumpleaños</option>
-                                <option value="Entrevista">Entrevista</option>
-                                <option value="Curso">Curso</option>
-                                <option value="Ingreso">Ingreso (Finanzas)</option>
-                                <option value="Gasto">Gasto (Finanzas)</option>
-                                <option value="Ahorro">Ahorro</option>
-                                <option value="Deuda">Deuda</option>
-                                <option value="Otro">Otro</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Categoría</label>
-                            <select id="ag-categoria" class="w-full border rounded-xl p-2 text-sm focus:ring-2 focus:ring-brand-pink focus:outline-none">
-                                <!-- Dinámico -->
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Título / Descripción corta</label>
-                            <input type="text" id="ag-titulo" class="w-full border rounded-xl p-2 text-sm focus:ring-2 focus:ring-brand-pink focus:outline-none" required>
-                        </div>
-                        <div class="grid grid-cols-2 gap-2">
-                            <div>
-                                <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Fecha Inicio</label>
-                                <input type="date" id="ag-f inicio" class="w-full border rounded-xl p-2 text-sm">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Fecha Fin</label>
-                                <input type="date" id="ag-f fin" class="w-full border rounded-xl p-2 text-sm">
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Ubicación / Enlace</label>
-                            <input type="text" id="ag-ubicacion" class="w-full border rounded-xl p-2 text-sm">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Personas de contacto / Importe (€)</label>
-                            <input type="text" id="ag-personas" placeholder="Ej. Juan Pérez o 150.00" class="w-full border rounded-xl p-2 text-sm">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Subtareas (separadas por comas)</label>
-                            <input type="text" id="ag-subtareas" placeholder="Ej. Revisar documento, Enviar correo" class="w-full border rounded-xl p-2 text-sm">
-                        </div>
-                        <div class="flex items-center space-x-2 pt-2">
-                            <input type="checkbox" id="ag-completado" class="w-4 h-4 text-brand-pink rounded">
-                            <label class="text-xs font-bold uppercase text-gray-700">Marcar como Completado manualmente</label>
-                        </div>
-                        <button type="submit" class="w-full bg-brand-darkpink text-white py-2.5 rounded-xl font-bold text-sm shadow hover:bg-brand-purple transition mt-2">Guardar Registro</button>
-                    </form>
-                </div>
+      try {
+        const url = state.github.gistId
+          ? `https://api.github.com/gists/${state.github.gistId}`
+          : `https://api.github.com/gists`;
+        const method = state.github.gistId ? 'PATCH' : 'POST';
 
-                <!-- Listado Diario y Registros -->
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-pink-100 lg:col-span-2 space-y-4">
-                    <div class="flex justify-between items-center border-b pb-2">
-                        <h3 class="text-lg font-bold text-brand-darkpink"><i class="fa-solid fa-list mr-2"></i>Registros de la Agenda</h3>
-                        <span id="agenda-hoy-fecha" class="text-xs bg-pink-100 text-brand-darkpink px-3 py-1 rounded-full font-semibold"></span>
-                    </div>
-                    <div id="agenda-list-container" class="space-y-3 max-h-[600px] overflow-y-auto pr-2">
-                        <!-- Dinámico -->
-                    </div>
-                </div>
-            </div>
-        </section>
+        const res = await fetch(url, {
+          method,
+          headers: {
+            'Authorization': `token ${state.github.token}`,
+            'Accept': 'application/vnd.github.v3+json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
 
-        <!-- 6. RESUMEN -->
-        <section id="tab-resumen" class="tab-content hidden space-y-6">
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-pink-100 space-y-6">
-                <h3 class="text-xl font-bold text-brand-darkpink border-b pb-2"><i class="fa-solid fa-chart-pie mr-2"></i>Resumen General y Financiero</h3>
-                
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div class="bg-pink-50 p-4 rounded-xl border border-pink-100">
-                        <h4 class="font-bold text-brand-darkpink text-sm mb-2">Objetivos y Logros</h4>
-                        <p class="text-xs text-gray-600 mb-1">Registra notas clave en Ajustes o ediciones rápidas.</p>
-                        <div id="resumen-objetivos" class="text-sm font-semibold text-gray-800">Sin objetivos registrados.</div>
-                    </div>
-                    <div class="bg-purple-50 p-4 rounded-xl border border-purple-100">
-                        <h4 class="font-bold text-purple-700 text-sm mb-2">Estado de Tareas y Citas</h4>
-                        <div id="resumen-tareas-citas" class="text-xs space-y-1 text-gray-700">Calculando...</div>
-                    </div>
-                    <div class="bg-green-50 p-4 rounded-xl border border-green-100">
-                        <h4 class="font-bold text-green-700 text-sm mb-2">Resumen Financiero</h4>
-                        <div id="resumen-financiero" class="text-xs space-y-1 text-gray-700">Calculando...</div>
-                    </div>
-                </div>
-            </div>
-        </section>
+        if (!res.ok) throw new Error('Verifica tu Token de GitHub y el permiso gist.');
+        const data = await res.json();
 
-        <!-- 7. INFORME EJECUTIVO -->
-        <section id="tab-informe" class="tab-content hidden space-y-6">
-            <div class="bg-white p-8 rounded-2xl shadow-sm border border-pink-100 max-w-4xl mx-auto space-y-6">
-                <!-- Cabecera obligatoria para impresión -->
-                <div class="flex justify-between items-center border-b-2 border-brand-pink pb-4">
-                    <div class="flex items-center space-x-3">
-                        <div class="bg-brand-darkpink text-white p-3 rounded-xl font-bold text-xl"><i class="fa-solid fa-calendar-days"></i></div>
-                        <div>
-                            <h2 class="font-bold text-gray-800 text-lg">Agenda Personal LB</h2>
-                            <p class="text-xs text-gray-500">Informe Ejecutivo de Desempeño</p>
-                        </div>
-                    </div>
-                    <div class="text-right">
-                        <p id="informe-fecha-actual" class="text-xs font-bold text-brand-darkpink"></p>
-                        <button onclick="window.print()" class="no-print mt-2 bg-brand-darkpink text-white px-4 py-1.5 rounded-lg text-xs font-bold shadow hover:bg-brand-purple"><i class="fa-solid fa-print mr-1"></i>Imprimir PDF</button>
-                    </div>
-                </div>
-
-                <div class="space-y-4">
-                    <h3 class="font-bold text-brand-darkpink text-base">Evaluación General y Desempeño</h3>
-                    <div id="informe-contenido" class="text-sm text-gray-700 space-y-3 bg-pink-50/40 p-4 rounded-xl">
-                        <!-- Generado por JS -->
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- 8. AJUSTES -->
-        <section id="tab-ajustes" class="tab-content hidden space-y-6">
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-pink-100 max-w-2xl mx-auto space-y-6">
-                <h3 class="text-xl font-bold text-brand-darkpink border-b pb-2"><i class="fa-solid fa-gear mr-2"></i>Ajustes y Sincronización</h3>
-                
-                <div class="space-y-4">
-                    <div class="border-b pb-4">
-                        <h4 class="font-bold text-sm text-gray-700 mb-2">Copia de Seguridad Local</h4>
-                        <div class="flex space-x-3">
-                            <button onclick="exportBackup()" class="bg-blue-600 text-white px-4 py-2 rounded-xl text-xs font-bold shadow hover:bg-blue-700"><i class="fa-solid fa-download mr-1"></i>Crear Copia de Seguridad</button>
-                            <label class="bg-gray-600 text-white px-4 py-2 rounded-xl text-xs font-bold shadow hover:bg-gray-700 cursor-pointer">
-                                <i class="fa-solid fa-upload mr-1"></i>Restaurar Copia <input type="file" id="import-file" onchange="importBackup(event)" class="hidden">
-                            </label>
-                        </div>
-                    </div>
-
-                    <div>
-                        <h4 class="font-bold text-sm text-gray-700 mb-2">Sincronización con GitHub (Token)</h4>
-                        <p class="text-xs text-gray-500 mb-2">Introduce tu Token personal de GitHub y repositorio para respaldar los datos en tiempo real.</p>
-                        <div class="space-y-2">
-                            <input type="text" id="gh-token" placeholder="GitHub Personal Access Token (ghp_...)" class="w-full border rounded-xl p-2.5 text-sm">
-                            <input type="text" id="gh-repo" placeholder="usuario/repositorio" class="w-full border rounded-xl p-2.5 text-sm">
-                            <button onclick="saveGitHubConfig()" class="bg-brand-darkpink text-white px-4 py-2 rounded-xl text-xs font-bold shadow hover:bg-brand-purple">Guardar Configuración GitHub</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-    </main>
-
-    <!-- Script de lógica de la aplicación -->
-    <script>
-        // Estado inicial y almacenamiento local
-        let appData = JSON.parse(localStorage.getItem('agenda_lb_data')) || {
-            profile: {},
-            categories: [
-                { id: '1', name: 'Hogar', color: '#ec4899' },
-                { id: '2', name: 'Trabajo', color: '#3b82f6' },
-                { id: '3', name: 'Finanzas', color: '#10b981' },
-                { id: '4', name: 'Mascotas', color: '#f59e0b' },
-                { id: '5', name: 'Salud', color: '#8b5cf6' },
-                { id: '6', name: 'Cumpleaños', color: '#ef4444' }
-            ],
-            records: [],
-            github: { token: '', repo: '' }
-        };
-
-        function saveData() {
-            localStorage.setItem('agenda_lb_data', JSON.stringify(appData));
-            updateUI();
+        if (!state.github.gistId && data.id) {
+          state.github.gistId = data.id;
+          document.getElementById('ghGistId').value = data.id;
+          saveLocalData(false);
         }
 
-        // Control de Pestañas
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-            document.querySelectorAll('.tab-btn').forEach(el => {
-                el.classList.remove('text-brand-darkpink', 'bg-pink-50');
-                el.classList.add('text-gray-600');
-            });
-            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
-            event.currentTarget.classList.add('text-brand-darkpink', 'bg-pink-50');
-            event.currentTarget.classList.remove('text-gray-600');
-        }
+        if (statusEl) statusEl.textContent = `✅ Sincronizado con GitHub a las ${new Date().toLocaleTimeString()}`;
+      } catch (err) {
+        if (!silent && statusEl) statusEl.textContent = `❌ Error de sincronización: ${err.message}`;
+      }
+    }
 
-        // Inicialización de fechas y datos
-        window.onload = function() {
-            const todayStr = new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-            document.getElementById('header-date').innerText = todayStr;
-            document.getElementById('agenda-hoy-fecha').innerText = todayStr;
-            document.getElementById('informe-fecha-actual').innerText = todayStr;
-            
-            // Cargar perfil si existe
-            if(appData.profile) {
-                document.getElementById('p-nombre').value = appData.profile.nombre || '';
-                document.getElementById('p-telefono').value = appData.profile.telefono || '';
-                document.getElementById('p-direccion').value = appData.profile.direccion || '';
-                document.getElementById('p-email').value = appData.profile.email || '';
-                document.getElementById('t-lugar').value = appData.profile.tLugar || '';
-                document.getElementById('t-telefono').value = appData.profile.tTelefono || '';
-                document.getElementById('t-ext').value = appData.profile.tExt || '';
-                document.getElementById('t-direccion').value = appData.profile.tDireccion || '';
-                document.getElementById('t-email').value = appData.profile.tEmail || '';
-            }
+    async function pullFromGitHub(silent = false) {
+      const statusEl = document.getElementById('syncStatusMsg');
+      const token = document.getElementById('ghToken').value.trim() || state.github.token;
+      const gistId = document.getElementById('ghGistId').value.trim() || state.github.gistId;
 
-            updateUI();
-        };
+      if (!token || !gistId) {
+        if (!silent) alert('Introduce tu Token de GitHub y el Gist ID para descargar datos.');
+        return;
+      }
 
-        // Guardar Perfil
-        function saveProfile(e) {
-            e.preventDefault();
-            appData.profile = {
-                nombre: document.getElementById('p-nombre').value,
-                telefono: document.getElementById('p-telefono').value,
-                direccion: document.getElementById('p-direccion').value,
-                email: document.getElementById('p-email').value,
-                tLugar: document.getElementById('t-lugar').value,
-                tTelefono: document.getElementById('t-telefono').value,
-                tExt: document.getElementById('t-ext').value,
-                tDireccion: document.getElementById('t-direccion').value,
-                tEmail: document.getElementById('t-email').value
-            };
-            saveData();
-            alert('¡Perfil guardado correctamente!');
-        }
+      try {
+        const res = await fetch(`https://api.github.com/gists/${gistId}`, {
+          headers: {
+            'Authorization': `token ${token}`,
+            'Accept': 'application/vnd.github.v3+json'
+          }
+        });
+        if (!res.ok) throw new Error('No se pudo leer el Gist en GitHub.');
+        const data = await res.json();
+        const fileContent = data.files['agenda_lb_data.json'].content;
+        const remoteData = JSON.parse(fileContent);
 
-        // Guardar Categoría
-        function saveCategory(e) {
-            e.preventDefault();
-            const name = document.getElementById('cat-nombre').value;
-            const color = document.getElementById('cat-color').value;
-            appData.categories.push({ id: Date.now().toString(), name, color });
-            document.getElementById('cat-nombre').value = '';
-            saveData();
-        }
+        state = { ...state, ...remoteData, github: { token, gistId } };
+        saveLocalData(false);
+        refreshAllUI();
+        if (statusEl) statusEl.textContent = `✅ Datos actualizados desde GitHub (${new Date().toLocaleTimeString()})`;
+      } catch (err) {
+        if (!silent && statusEl) statusEl.textContent = `❌ Error al descargar: ${err.message}`;
+      }
+    }
 
-        // Guardar Registro de Agenda
-        function saveAgendaRecord(e) {
-            e.preventDefault();
-            const subtxt = document.getElementById('ag-subtareas').value;
-            const subtasks = subtxt ? subtxt.split(',').map(s => ({ text: s.trim(), completed: false })) : [];
+    // 10. IMPRESIÓN EN PDF E ICONO DE INSTALACIÓN (PWA)
+    function printCurrentView() {
+      document.getElementById('printHeaderDate').textContent = new Date().toLocaleDateString('es-ES', {
+        day: '2-digit', month: '2-digit', year: 'numeric'
+      });
+      window.print();
+    }
 
-            const record = {
-                id: Date.now().toString(),
-                tipo: document.getElementById('ag-tipo').value,
-                categoria: document.getElementById('ag-categoria').value,
-                titulo: document.getElementById('ag-titulo').value,
-                fInicio: document.getElementById('ag-f inicio').value || new Date().toISOString().split('T')[0],
-                fFin: document.getElementById('ag-f fin').value || '',
-                ubicacion: document.getElementById('ag-ubicacion').value,
-                personas: document.getElementById('ag-personas').value,
-                subtareas: subtasks,
-                completado: document.getElementById('ag-completado').checked
-            };
-
-            appData.records.push(record);
-            document.getElementById('agenda-form').reset();
-            saveData();
-        }
-
-        // Cambiar estado subtarea
-        function toggleSubtask(recordId, index) {
-            const rec = appData.records.find(r => r.id === recordId);
-            if(rec && rec.subtareas[index]) {
-                rec.subtareas[index].completed = !rec.subtareas[index].completed;
-                saveData();
-            }
-        }
-
-        // Borrar registro
-        function deleteRecord(id) {
-            appData.records = appData.records.filter(r => r.id !== id);
-            saveData();
-        }
-
-        // Actualizar Interfaz Completa
-        function updateUI() {
-            // Select de Categorías
-            const catSelect = document.getElementById('ag-categoria');
-            catSelect.innerHTML = appData.categories.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
-
-            // Lista de Categorías
-            const catList = document.getElementById('categories-list');
-            catList.innerHTML = appData.categories.map(c => `
-                <div class="flex items-center justify-between p-3 rounded-xl border border-pink-100 bg-pink-50/30">
-                    <div class="flex items-center space-x-3">
-                        <span class="w-4 h-4 rounded-full" style="background-color: ${c.color}"></span>
-                        <span class="font-bold text-sm text-gray-700">${c.name}</span>
-                    </div>
-                </div>
-            `).join('');
-
-            // Listado Agenda
-            const agendaList = document.getElementById('agenda-list-container');
-            agendaList.innerHTML = appData.records.length === 0 ? '<p class="text-xs text-gray-500">No hay registros en la agenda.</p>' : appData.records.map(r => {
-                let statusBadge = '';
-                let progressPercent = 0;
-                if(r.subtareas.length > 0) {
-                    const completedCount = r.subtareas.filter(s => s.completed).length;
-                    progressPercent = Math.round((completedCount / r.subtareas.length) * 100);
-                    if(completedCount === 0) statusBadge = `<span class="bg-red-100 text-red-700 px-2 py-0.5 rounded text-[10px] font-bold">PENDIENTE</span>`;
-                    else if(completedCount === r.subtareas.length || r.completado) statusBadge = `<span class="bg-green-100 text-green-700 px-2 py-0.5 rounded text-[10px] font-bold">COMPLETADO</span>`;
-                    else statusBadge = `<span class="bg-amber-100 text-amber-700 px-2 py-0.5 rounded text-[10px] font-bold">${progressPercent}%</span>`;
-                } else {
-                    statusBadge = r.completado ? `<span class="bg-green-100 text-green-700 px-2 py-0.5 rounded text-[10px] font-bold">COMPLETADO</span>` : `<span class="bg-red-100 text-red-700 px-2 py-0.5 rounded text-[10px] font-bold">PENDIENTE</span>`;
-                }
-
-                return `
-                    <div class="border border-pink-100 p-4 rounded-xl space-y-2 bg-white shadow-xs">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <span class="bg-pink-100 text-brand-darkpink px-2 py-0.5 rounded text-xs font-bold mr-2">${r.tipo}</span>
-                                <span class="text-xs text-gray-500 font-semibold">${r.categoria}</span>
-                                <h4 class="font-bold text-gray-800 text-sm mt-1">${r.titulo}</h4>
-                            </div>
-                            <div class="flex items-center space-x-2">
-                                ${statusBadge}
-                                <button onclick="deleteRecord('${r.id}')" class="text-red-500 hover:text-red-700 text-xs"><i class="fa-solid fa-trash"></i></button>
-                            </div>
-                        </div>
-                        <p class="text-xs text-gray-500"><i class="fa-solid fa-calendar mr-1"></i> ${r.fInicio} ${r.fFin ? 'al ' + r.fFin : ''} | <i class="fa-solid fa-location-dot mr-1"></i> ${r.ubicacion || 'N/A'}</p>
-                        ${r.subtareas.length > 0 ? `
-                            <div class="space-y-1 pt-1 border-t border-gray-100">
-                                <div class="w-full bg-gray-200 rounded-full h-1.5 overflow-hidden">
-                                    <div class="bg-green-500 h-1.5 transition-all" style="width: ${progressPercent}%"></div>
-                                </div>
-                                <div class="flex flex-wrap gap-2 pt-1">
-                                    ${r.subtareas.map((st, idx) => `
-                                        <label class="text-xs flex items-center space-x-1 cursor-pointer bg-gray-50 px-2 py-0.5 rounded border">
-                                            <input type="checkbox" ${st.completed ? 'checked' : ''} onchange="toggleSubtask('${r.id}', ${idx})" class="rounded text-brand-pink">
-                                            <span class="${st.completed ? 'line-through text-gray-400' : 'text-gray-700'}">${st.text}</span>
-                                        </label>
-                                    `).join('')}
-                                </div>
-                            </div>
-                        ` : ''}
-                    </div>
-                `;
-            }).join('');
-
-            // Estadísticas e inicio
-            document.getElementById('stat-tareas').innerText = appData.records.filter(r => r.tipo === 'Tarea').length;
-            document.getElementById('stat-citas').innerText = appData.records.filter(r => r.tipo === 'Reunión' || r.tipo === 'Evento').length;
-            
-            // Finanzas y ahorros
-            const ahorros = appData.records.filter(r => r.tipo === 'Ahorro' || r.tipo === 'Ingreso').reduce((acc, curr) => acc + (parseFloat(curr.personas) || 0), 0);
-            document.getElementById('stat-ahorro').innerText = ahorros.toFixed(2) + ' €';
-
-            // Resumen Financiero y Tareas
-            document.getElementById('resumen-tareas-citas').innerHTML = `
-                <p>Total Tareas: <b>${appData.records.filter(r => r.tipo === 'Tarea').length}</b></p>
-                <p>Total Citas: <b>${appData.records.filter(r => r.tipo === 'Reunión').length}</b></p>
-            `;
-            document.getElementById('resumen-financiero').innerHTML = `
-                <p>Ingresos / Ahorros Totales: <b>${ahorros.toFixed(2)} €</b></p>
-            `;
-
-            // Informe Ejecutivo
-            document.getElementById('informe-contenido').innerHTML = `
-                <p><b>Evaluación de Desempeño:</b> Se han registrado un total de <b>${appData.records.length}</b> elementos en la agenda general.</p>
-                <p><b>Estado Actual:</b> Las categorías activas operan correctamente con sincronización local activa.</p>
-                <p><b>Pendientes clave:</b> Revisar las tareas marcadas en rojo en la sección de agenda para cumplir con los plazos previstos.</p>
-            `;
-        }
-
-        // Funciones de Copia de Seguridad
-        function exportBackup() {
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appData));
-            const downloadAnchor = document.createElement('a');
-            downloadAnchor.setAttribute("href", dataStr);
-            downloadAnchor.setAttribute("download", "backup_agenda_lb.json");
-            document.body.appendChild(downloadAnchor);
-            downloadAnchor.click();
-            downloadAnchor.remove();
-        }
-
-        function importBackup(e) {
-            const fileReader = new FileReader();
-            fileReader.readAsText(e.target.files[0], "UTF-8");
-            fileReader.onload = event => {
-                appData = JSON.parse(event.target.result);
-                saveData();
-                alert('¡Copia de seguridad restaurada con éxito!');
-            };
-        }
-
-        function saveGitHubConfig() {
-            appData.github.token = document.getElementById('gh-token').value;
-            appData.github.repo = document.getElementById('gh-repo').value;
-            saveData();
-            alert('Configuración de GitHub guardada correctamente.');
-        }
-
-        function filterCalendar(tipo) {
-            alert(`Filtro ${tipo} aplicado.`);
-        }
-        function applyCustomFilter() {}
-        function resetCalendarFilter() {}
-    </script>
+    function setupManifestPWA() {
+      const manifest = {
+        name: "Agenda Personal LB",
+        short_name: "Agenda LB",
+        start_url: "./index.html",
+        display: "standalone",
+        background_color: "#fdf8fa",
+        theme_color: "#9e1f63",
+        icons: [
+          {
+            src: "Logo Agenda.jpeg",
+            sizes: "512x512",
+            type: "image/jpeg"
+          }
+        ]
+      };
+      const blob = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
+      const manifestURL = URL.createObjectURL(blob);
+      const link = document.createElement('link');
+      link.rel = 'manifest';
+      link.href = manifestURL;
+      document.head.appendChild(link);
+    }
+  </script>
 </body>
 </html>
